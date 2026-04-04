@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /c/Users/pc/Desktop/\"Final year project\")",
+      "Bash(\"c:/Users/pc/Desktop/Final year:*)",
+      "Bash(node -e \":*)"
+    ]
+  }
+}

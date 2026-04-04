@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep:*)",
+      "Bash(npm install:*)",
+      "Bash(for module:*)",
+      "Bash(do echo:*)",
+      "Read(//c/Users/pc/Desktop/Final year project/backend/src/modules/**)",
+      "Bash(done)",
+      "Bash(for page:*)",
+      "Read(//c/Users/pc/Desktop/Final year project/frontend/src/pages/**)",
+      "Bash(grep -l \"validator\" \"/c/Users/pc/Desktop/Final year project/backend/src/modules/\"*\"/\"*.js)",
+      "Bash(\"c:\\\\Users\\\\pc\\\\Desktop\\\\Final year:*)",
+      "Bash(node -e \"require\\(''''./src/models/index.js''''\\); console.log\\(''''models OK''''\\)\")",
+      "Bash(node -e \":*)",
+      "Bash(node -e \"require\\(''''./src/modules/rehearsals/rehearsal.service.js''''\\); console.log\\(''''service OK''''\\)\")",
+      "Bash(node -e \"require\\(''''./src/app.js''''\\); console.log\\(''''app OK''''\\)\")"
+    ]
+  }
+}
