@@ -11,6 +11,7 @@ import {
   Plus, Pencil, Trash2, Save, BarChart3,
   Shirt, Package, Building2, Star, Layers,
 } from 'lucide-react';
+import { DetailSkeleton } from '../../components/common/Skeleton';
 
 // ─── Constants ────────────────────────────────────────────────
 
@@ -38,11 +39,11 @@ const EVENT_TYPE_LABEL = {
 };
 
 const EVENT_TYPE_COLOR = {
-  meeting:         'bg-blue-100 text-blue-700',
+  meeting:         'bg-orange-100 text-orange-700',
   fitting:         'bg-pink-100 text-pink-700',
-  venue_visit:     'bg-purple-100 text-purple-700',
+  venue_visit:     'bg-orange-100 text-orange-700',
   technical:       'bg-orange-100 text-orange-700',
-  dress_rehearsal: 'bg-indigo-100 text-indigo-700',
+  dress_rehearsal: 'bg-orange-100 text-orange-700',
   other:           'bg-gray-100 text-gray-600',
 };
 
@@ -81,7 +82,7 @@ const ParentCircle = ({ status }) => {
   // Completed: solid indigo fill + white tick
   if (status === 'completed') {
     return (
-      <span style={{ width: 22, height: 22, borderRadius: '50%', background: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <span style={{ width: 22, height: 22, borderRadius: '50%', background: '#f97316', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
           <path d="M2 5.5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
@@ -95,16 +96,16 @@ const ParentCircle = ({ status }) => {
       <span style={{ width: 22, height: 22, position: 'relative', flexShrink: 0 }}>
         <svg width="22" height="22" viewBox="0 0 22 22" style={{ position: 'absolute', inset: 0 }}>
           {/* full light ring */}
-          <circle cx={cx} cy={cy} r={r} fill="white" stroke="#e0e7ff" strokeWidth="2"/>
+          <circle cx={cx} cy={cy} r={r} fill="white" stroke="#ffedd5" strokeWidth="2"/>
           {/* indigo arc ~1/3 of circle, from top going clockwise */}
-          <circle cx={cx} cy={cy} r={r} fill="none" stroke="#4f46e5" strokeWidth="2"
+          <circle cx={cx} cy={cy} r={r} fill="none" stroke="#f97316" strokeWidth="2"
             strokeDasharray={`${circ * 0.3} ${circ * 0.7}`}
             strokeLinecap="round"
             transform={`rotate(-90 ${cx} ${cy})`}/>
         </svg>
         {/* inner dot */}
         <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#4f46e5' }}/>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f97316' }}/>
         </span>
       </span>
     );
@@ -125,7 +126,7 @@ const ParentCircle = ({ status }) => {
 const SubCircle = ({ status, active }) => {
   if (status === 'completed') {
     return (
-      <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#4f46e5', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#f97316', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <svg width="6" height="6" viewBox="0 0 6 6" fill="none">
           <path d="M1 3l1.5 1.5 2.5-2.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
@@ -134,7 +135,7 @@ const SubCircle = ({ status, active }) => {
   }
   if (active) {
     // active sub-step = solid indigo, larger
-    return <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#4f46e5', flexShrink: 0 }}/>;
+    return <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#f97316', flexShrink: 0 }}/>;
   }
   // inactive sub-step = grey solid
   return <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#cbd5e1', flexShrink: 0 }}/>;
@@ -220,7 +221,7 @@ const TimelineTab = ({ productionId, canManage }) => {
           <button
             disabled={seedMutation.isPending}
             onClick={() => seedMutation.mutate()}
-            style={{ background: '#4f46e5', color: 'white', border: 'none', borderRadius: 8, padding: '10px 20px', fontSize: 13, fontWeight: 600, cursor: 'pointer', opacity: seedMutation.isPending ? 0.7 : 1 }}
+            style={{ background: '#f97316', color: 'white', border: 'none', borderRadius: 8, padding: '10px 20px', fontSize: 13, fontWeight: 600, cursor: 'pointer', opacity: seedMutation.isPending ? 0.7 : 1 }}
           >
             {seedMutation.isPending ? 'Creating…' : '+ Load Default Milestones'}
           </button>
@@ -228,7 +229,7 @@ const TimelineTab = ({ productionId, canManage }) => {
             onClick={() => setShowAdd(true)}
             style={{ background: 'white', color: '#475569', border: '1px solid #e2e8f0', borderRadius: 8, padding: '10px 20px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
           >
-            + Add Custom
+            + Add Custom    
           </button>
         </div>
       )}
@@ -246,7 +247,7 @@ const TimelineTab = ({ productionId, canManage }) => {
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => setShowAdd(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded text-sm font-medium">Cancel</button>
               <button disabled={!form.title || createMutation.isPending} onClick={() => createMutation.mutate(form)}
-                style={{ flex: 1, background: '#4f46e5', color: 'white', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer', opacity: (!form.title || createMutation.isPending) ? 0.5 : 1, padding: '8px 0' }}>
+                style={{ flex: 1, background: '#f97316', color: 'white', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer', opacity: (!form.title || createMutation.isPending) ? 0.5 : 1, padding: '8px 0' }}>
                 {createMutation.isPending ? 'Adding…' : 'Add Milestone'}
               </button>
             </div>
@@ -290,7 +291,7 @@ const TimelineTab = ({ productionId, canManage }) => {
                 >
                   <span style={{
                     fontSize: 14, fontWeight: 600,
-                    color: gs === 'in_progress' ? '#4f46e5' : gs === 'completed' ? '#0f172a' : '#94a3b8',
+                    color: gs === 'in_progress' ? '#f97316' : gs === 'completed' ? '#0f172a' : '#94a3b8',
                   }}>
                     {CATEGORY_LABEL[cat] || cat}
                   </span>
@@ -317,7 +318,7 @@ const TimelineTab = ({ productionId, canManage }) => {
                             style={{
                               marginLeft: 10, paddingBottom: isLastSub ? 0 : 10,
                               fontSize: 13, fontWeight: isActiveSub ? 600 : 400, textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer',
-                              color: m.status === 'completed' ? '#94a3b8' : isActiveSub ? '#4f46e5' : '#64748b',
+                              color: m.status === 'completed' ? '#94a3b8' : isActiveSub ? '#f97316' : '#64748b',
                               textDecoration: m.status === 'completed' ? 'line-through' : 'none',
                             }}
                           >
@@ -370,7 +371,7 @@ const TimelineTab = ({ productionId, canManage }) => {
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={() => setShowAdd(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded text-sm font-medium">Cancel</button>
                 <button disabled={!form.title || createMutation.isPending} onClick={() => createMutation.mutate(form)}
-                  style={{ flex: 1, background: '#4f46e5', color: 'white', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer', opacity: (!form.title || createMutation.isPending) ? 0.5 : 1 }}>
+                  style={{ flex: 1, background: '#f97316', color: 'white', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer', opacity: (!form.title || createMutation.isPending) ? 0.5 : 1 }}>
                   {createMutation.isPending ? 'Adding…' : 'Add Milestone'}
                 </button>
               </div>
@@ -407,7 +408,7 @@ const TimelineTab = ({ productionId, canManage }) => {
                 <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
                   <button onClick={() => setEditMode(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded text-sm font-medium">Cancel</button>
                   <button disabled={updateMutation.isPending} onClick={() => updateMutation.mutate({ mid: selected.id, data: form })}
-                    style={{ flex: 1, background: '#4f46e5', color: 'white', border: 'none', borderRadius: 6, padding: '10px 0', fontSize: 14, fontWeight: 600, cursor: 'pointer', opacity: updateMutation.isPending ? 0.6 : 1 }}>
+                    style={{ flex: 1, background: '#f97316', color: 'white', border: 'none', borderRadius: 6, padding: '10px 0', fontSize: 14, fontWeight: 600, cursor: 'pointer', opacity: updateMutation.isPending ? 0.6 : 1 }}>
                     {updateMutation.isPending ? 'Saving…' : 'Save Changes'}
                   </button>
                 </div>
@@ -433,7 +434,7 @@ const TimelineTab = ({ productionId, canManage }) => {
               <div style={{ display: 'flex', gap: 16, marginBottom: 28, flexWrap: 'wrap' }}>
                 {/* Status badge */}
                 <div style={{ background: selected.status === 'completed' ? '#f0fdf4' : selected.status === 'in_progress' ? '#eef2ff' : '#f8fafc', border: `1px solid ${selected.status === 'completed' ? '#bbf7d0' : selected.status === 'in_progress' ? '#c7d2fe' : '#e2e8f0'}`, borderRadius: 20, padding: '4px 12px' }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: selected.status === 'completed' ? '#16a34a' : selected.status === 'in_progress' ? '#4f46e5' : '#94a3b8' }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: selected.status === 'completed' ? '#16a34a' : selected.status === 'in_progress' ? '#f97316' : '#94a3b8' }}>
                     {selected.status === 'in_progress' ? 'In Progress' : selected.status === 'completed' ? '✓ Completed' : 'Pending'}
                   </span>
                 </div>
@@ -461,7 +462,7 @@ const TimelineTab = ({ productionId, canManage }) => {
                       const next = { pending: 'in_progress', in_progress: 'completed' };
                       cycleMutation.mutate({ mid: selected.id, status: next[selected.status] });
                     }}
-                    style={{ width: '100%', background: '#4f46e5', color: 'white', border: 'none', borderRadius: 8, padding: '13px 0', fontSize: 15, fontWeight: 700, cursor: 'pointer', marginBottom: 10, opacity: cycleMutation.isPending ? 0.7 : 1 }}
+                    className="w-full bg-slate-500 hover:bg-slate-600 text-white text-sm font-medium px-3 py-1.5 rounded transition-colors mb-2 disabled:opacity-60"
                   >
                     {cycleMutation.isPending ? 'Updating…' : selected.status === 'pending' ? 'Mark as In Progress' : 'Mark as Complete'}
                   </button>
@@ -469,7 +470,7 @@ const TimelineTab = ({ productionId, canManage }) => {
                 {canManage && selected.status === 'completed' && (
                   <button
                     onClick={() => cycleMutation.mutate({ mid: selected.id, status: 'pending' })}
-                    style={{ width: '100%', background: 'white', color: '#64748b', border: '1px solid #e2e8f0', borderRadius: 8, padding: '13px 0', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
+                    className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-3 py-1.5 rounded transition-colors mb-2"
                   >
                     Reopen Milestone
                   </button>
@@ -478,15 +479,15 @@ const TimelineTab = ({ productionId, canManage }) => {
                   <div style={{ display: 'flex', gap: 8 }}>
                     <button
                       onClick={() => { setForm({ title: selected.title, category: selected.category, due_date: selected.due_date||'', notes: selected.notes||'' }); setEditMode(true); }}
-                      style={{ flex: 1, background: 'white', border: '1px solid #e2e8f0', borderRadius: 8, padding: '9px 0', fontSize: 13, fontWeight: 600, color: '#475569', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+                      className="flex-1 flex items-center justify-center gap-1.5 bg-slate-500 hover:bg-slate-600 text-white text-xs font-medium px-3 py-1.5 rounded transition-colors"
                     >
-                      <Pencil size={13}/> Edit
+                      <Pencil size={12}/> Edit
                     </button>
                     <button
                       onClick={() => deleteMutation.mutate(selected.id)}
-                      style={{ flex: 1, background: 'white', border: '1px solid #fecaca', borderRadius: 8, padding: '9px 0', fontSize: 13, fontWeight: 600, color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+                      className="flex-1 flex items-center justify-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-500 border border-red-200 text-xs font-medium px-3 py-1.5 rounded transition-colors"
                     >
-                      <Trash2 size={13}/> Delete
+                      <Trash2 size={12}/> Delete
                     </button>
                   </div>
                 )}
@@ -698,7 +699,7 @@ const EventsTab = ({ productionId, canManage }) => {
                 </span>
                 <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium capitalize ${
                   ev.status === 'completed' ? 'bg-green-100 text-green-700' :
-                  ev.status === 'cancelled' ? 'bg-red-100 text-red-500'    : 'bg-blue-100 text-blue-700'
+                  ev.status === 'cancelled' ? 'bg-red-100 text-red-500'    : 'bg-orange-100 text-orange-700'
                 }`}>{ev.status}</span>
               </div>
               {ev.event_time  && <p className="text-xs text-gray-400">{ev.event_time.slice(0,5)}</p>}
@@ -870,7 +871,7 @@ const TABS = [
 const STATUS_BADGE = {
   planning:  'bg-yellow-100 text-yellow-700',
   active:    'bg-green-100 text-green-700',
-  completed: 'bg-blue-100 text-blue-700',
+  completed: 'bg-orange-100 text-orange-700',
   cancelled: 'bg-red-100 text-red-600',
 };
 
@@ -894,17 +895,14 @@ const ProductionDetailPage = () => {
 
   const allMilestonesDone = milestones.length > 0 && milestones.every(m => m.status === 'completed');
 
-  if (isLoading) return <div className="text-gray-400 text-sm py-12 text-center">Loading…</div>;
+  if (isLoading) return <DetailSkeleton />;
   if (!production) return <div className="text-red-500 text-sm">Production not found.</div>;
 
   const badgeCls = STATUS_BADGE[production.status] || 'bg-gray-100 text-gray-600';
 
   return (
     <div className="max-w-4xl">
-      {/* Back */}
-      <Link to="/productions" className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-slate-700 mb-5 transition-colors">
-        <ArrowLeft size={13} /> Back to Productions
-      </Link>
+     
 
       {/* Header card */}
       <div className="bg-white border border-gray-200 rounded-xl p-6 mb-5">

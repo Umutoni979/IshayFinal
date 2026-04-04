@@ -3,8 +3,16 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
 import { usersApi } from '../../api/usersApi';
 import { authApi } from '../../api/authApi';
+import { rolesApi } from '../../api/rolesApi';
 import toast from 'react-hot-toast';
-import { Camera, User, Monitor, Smartphone, Globe, Trash2 } from 'lucide-react';
+import { Camera, User, Monitor, Smartphone, Globe, Trash2, Theater } from 'lucide-react';
+
+const BASIC_ROLES = ['actor', 'crew', 'guest'];
+const statusStyle = {
+  open:     'bg-gray-100 text-gray-500',
+  assigned: 'bg-yellow-100 text-yellow-700',
+  approved: 'bg-green-100 text-green-700',
+};
 
 const parseDevice = (ua = '') => {
   if (!ua) return { icon: 'globe', label: 'Unknown device' };
@@ -28,6 +36,16 @@ const ProfilePage = () => {
   const queryClient = useQueryClient();
   const fileInputRef = useRef(null);
   const [preview, setPreview] = useState(null);
+
+  const isBasic = BASIC_ROLES.includes(user?.role);
+
+  const { data: myRoles = [] } = useQuery({
+    queryKey: ['my-roles', user?.id],
+    queryFn: () => rolesApi.getAll().then(r =>
+      r.data.data.roles.filter(role => role.assigned_to?.id === user?.id)
+    ),
+    enabled: isBasic && !!user?.id,
+  });
 
   const { data: sessionsData, isLoading: sessionsLoading } = useQuery({
     queryKey: ['my-sessions'],
@@ -149,6 +167,34 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+      {/* My Roles — only for actor/crew/guest */}
+      {isBasic && (
+        <div className="bg-white border border-gray-200 rounded-sm p-8 max-w-lg mt-6">
+          <h2 className="text-base font-bold text-slate-800 mb-1 flex items-center gap-2">
+            <Theater size={16} className="text-indigo-500" /> My Production Roles
+          </h2>
+          <p className="text-xs text-gray-400 mb-4">Parts you have been assigned to in productions.</p>
+
+          {myRoles.length === 0 ? (
+            <p className="text-xs text-gray-400">No roles assigned to you yet.</p>
+          ) : (
+            <div className="space-y-2">
+              {myRoles.map(role => (
+                <div key={role.id} className="flex items-center justify-between border border-gray-100 rounded-lg px-4 py-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">{role.title}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{role.Production?.title || '—'}</p>
+                  </div>
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${statusStyle[role.status]}`}>
+                    {role.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Sessions */}
       <div className="bg-white border border-gray-200 rounded-sm p-8 max-w-lg mt-6">
         <h2 className="text-base font-bold text-slate-800 mb-1">Active Sessions</h2>

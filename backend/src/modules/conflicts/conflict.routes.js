@@ -4,6 +4,7 @@ const { authorize } = require('../../middleware/authorize');
 const c = require('./conflict.controller');
 
 router.get('/',                  auth, authorize('director', 'coordinator'), c.getAll);
+router.post('/detect',           auth, authorize('director', 'coordinator'), c.detect);
 router.get('/member/:memberId',  auth,                                       c.getForMember);
 router.get('/:id',               auth, authorize('director', 'coordinator'), c.getById);
 router.put('/:id/resolve',       auth, authorize('director', 'coordinator'), c.resolve);

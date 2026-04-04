@@ -10,8 +10,8 @@ const updatePermissions  = asyncHandler(async (req, res) => success(res, { user:
 const toggleRegistration  = asyncHandler(async (req, res) => success(res, { enabled: await service.toggleRegistration(req.body.enable) }, 'Registration setting updated'));
 const toggleSelfCheckin    = asyncHandler(async (req, res) => success(res, { enabled: await service.toggleSelfCheckin(req.body.enable) }, 'Self check-in setting updated'));
 const getSelfCheckinStatus = asyncHandler(async (req, res) => success(res, await service.getSelfCheckinStatus()));
-const setSelfCheckinCutoff = asyncHandler(async (req, res) => success(res, { cutoff: await service.setSelfCheckinCutoff(req.body.cutoff) }, 'Cutoff time saved'));
+const openSelfCheckin      = asyncHandler(async (req, res) => success(res, await service.openSelfCheckin(req.body.windowMinutes), 'Self check-in opened'));
 const updateUser  = asyncHandler(async (req, res) => success(res, { user: await service.updateUser(req.params.id, req.body, req.user.id) }, 'User updated'));
 const deleteUser  = asyncHandler(async (req, res) => { await service.deleteUser(req.params.id, req.user.id); success(res, null, 'User deleted'); });
 
-module.exports = { getAllUsers, createUser, setUserStatus, changeRole, updatePermissions, toggleRegistration, toggleSelfCheckin, getSelfCheckinStatus, setSelfCheckinCutoff, updateUser, deleteUser };
+module.exports = { getAllUsers, createUser, setUserStatus, changeRole, updatePermissions, toggleRegistration, toggleSelfCheckin, getSelfCheckinStatus, openSelfCheckin, updateUser, deleteUser };

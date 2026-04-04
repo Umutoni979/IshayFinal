@@ -3,11 +3,12 @@ const { Op } = require('sequelize');
 
 const getAttendanceReport = async (filters = {}) => {
   const where = {};
-  if (filters.production_id) {
+  if (filters.rehearsal_id) {
+    where.rehearsal_id = filters.rehearsal_id;
+  } else if (filters.production_id) {
     const rehearsals = await Rehearsal.findAll({ where: { production_id: filters.production_id }, attributes: ['id'] });
     where.rehearsal_id = rehearsals.map((r) => r.id);
-  }
-  if (filters.start_date && filters.end_date) {
+  } else if (filters.start_date && filters.end_date) {
     const rehearsals = await Rehearsal.findAll({
       where: { date: { [Op.between]: [filters.start_date, filters.end_date] } },
       attributes: ['id'],
@@ -26,14 +27,30 @@ const getAttendanceReport = async (filters = {}) => {
   const summary = {};
   records.forEach((r) => {
     const key = r.member_id;
-    if (!summary[key]) summary[key] = { member: r.member, total: 0, present: 0, absent: 0, late: 0, excused: 0 };
+    if (!summary[key]) summary[key] = { member: r.member, total: 0, present: 0, absent: 0, late: 0, excused: 0, not_marked: 0 };
     summary[key][r.status]++;
     summary[key].total++;
   });
 
+  // When filtering by a specific rehearsal, include all active members
+  // so those not yet marked are visible (shows as not_marked)
+  if (filters.rehearsal_id) {
+    const allMembers = await User.findAll({
+      where: { is_active: true, role: ['actor', 'crew', 'guest', 'coordinator'] },
+      attributes: ['id', 'name', 'role'],
+    });
+    allMembers.forEach((m) => {
+      if (!summary[m.id]) {
+        summary[m.id] = { member: m, total: 1, present: 0, absent: 0, late: 0, excused: 0, not_marked: 1 };
+      }
+    });
+  }
+
   return Object.values(summary).map((s) => ({
     ...s,
-    attendance_rate: s.total ? ((s.present + s.late) / s.total * 100).toFixed(1) + '%' : '0%',
+    attendance_rate: s.total && (s.present + s.late + s.absent + s.excused) > 0
+      ? ((s.present + s.late) / (s.total) * 100).toFixed(1) + '%'
+      : '—',
   }));
 };
 

@@ -9,7 +9,8 @@ const update  = asyncHandler(async (req, res) => success(res, { role: await serv
 const remove  = asyncHandler(async (req, res) => { await service.remove(req.params.id); success(res, null, 'Role deleted'); });
 
 const assign = asyncHandler(async (req, res) => {
-  const role = await service.assign(req.params.id, req.body.member_id, req.user.id);
+  const notify = req.body.notify !== false;
+  const role = await service.assign(req.params.id, req.body.member_id, req.user.id, notify);
   return success(res, { role }, 'Role assigned successfully');
 });
 

@@ -16,4 +16,9 @@ const ignore = asyncHandler(async (req, res) => {
   return success(res, { conflict }, 'Conflict ignored');
 });
 
-module.exports = { getAll, getById, getForMember, resolve, ignore };
+const detect = asyncHandler(async (_req, res) => {
+  const count = await service.detectConflicts();
+  return success(res, { detected: count }, count > 0 ? `${count} new conflict(s) found` : 'No new conflicts found');
+});
+
+module.exports = { getAll, getById, getForMember, resolve, ignore, detect };

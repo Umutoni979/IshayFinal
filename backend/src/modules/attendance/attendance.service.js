@@ -1,4 +1,5 @@
 const { Attendance, Rehearsal, User, SystemSetting } = require('../../models');
+const notificationService = require('../notifications/notification.service');
 
 const getByRehearsal = async (rehearsalId) => {
   return Attendance.findAll({
@@ -24,6 +25,21 @@ const mark = async (data, markedById) => {
   if (!created) {
     await record.update({ status, check_in_time, notes, excuse_reason, marked_by_id: markedById });
   }
+
+  // Notify the member (skip if they marked themselves)
+  if (markedById !== member_id) {
+    const rehearsal = await Rehearsal.findByPk(rehearsal_id, { attributes: ['title', 'date'] });
+    notificationService.send({
+      recipient_ids: [member_id],
+      sender_id: markedById,
+      type: 'attendance_marked',
+      title: 'Your attendance has been recorded',
+      body: `You were marked as "${status}" for rehearsal "${rehearsal?.title}" on ${rehearsal?.date}.`,
+      related_entity_type: 'rehearsal',
+      related_entity_id: rehearsal_id,
+    }).catch(() => {});
+  }
+
   return record;
 };
 
@@ -61,19 +77,12 @@ const selfCheckin = async (rehearsalId, userId, status = 'present') => {
   const rehearsal = await Rehearsal.findByPk(rehearsalId);
   if (!rehearsal) throw { statusCode: 404, message: 'Rehearsal not found' };
 
-  // 3. Check window (minutes after rehearsal start) if set
-  const windowSetting = await SystemSetting.findOne({ where: { key: 'self_checkin_cutoff' } });
-  const windowMinutes = windowSetting ? parseInt(windowSetting.value) : 0;
-  if (windowMinutes > 0 && rehearsal.start_time) {
-    const [h, m] = rehearsal.start_time.split(':').map(Number);
-    const startMins = h * 60 + m;
-    const now = new Date();
-    const nowMins = now.getHours() * 60 + now.getMinutes();
-    if (nowMins > startMins + windowMinutes) {
-      const closeH = Math.floor((startMins + windowMinutes) / 60) % 24;
-      const closeM = (startMins + windowMinutes) % 60;
-      const closeStr = `${String(closeH).padStart(2, '0')}:${String(closeM).padStart(2, '0')}`;
-      throw { statusCode: 403, message: `Check-in closed at ${closeStr}` };
+  // 3. Check if window has expired
+  const closesSetting = await SystemSetting.findOne({ where: { key: 'self_checkin_closes_at' } });
+  if (closesSetting?.value) {
+    const closesAt = new Date(closesSetting.value);
+    if (new Date() > closesAt) {
+      throw { statusCode: 403, message: 'Self check-in window has closed' };
     }
   }
 

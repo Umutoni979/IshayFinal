@@ -6,6 +6,6 @@ export const rolesApi = {
   create:   (data)        => api.post('/roles', data),
   update:   (id, data)    => api.put(`/roles/${id}`, data),
   delete:   (id)          => api.delete(`/roles/${id}`),
-  assign:   (id, memberId) => api.post(`/roles/${id}/assign`, { member_id: memberId }),
+  assign:   (id, memberId, notify = true) => api.post(`/roles/${id}/assign`, { member_id: memberId, notify }),
   approve:  (id)          => api.post(`/roles/${id}/approve`),
 };

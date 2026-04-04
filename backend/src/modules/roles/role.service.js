@@ -1,4 +1,5 @@
 const { Role, User, Production } = require('../../models');
+const notificationService = require('../notifications/notification.service');
 
 const getAll = async (filters = {}) => {
   const where = {};
@@ -34,14 +35,27 @@ const update = async (id, data) => {
   return role;
 };
 
-const assign = async (roleId, memberId, suggestedById) => {
+const assign = async (roleId, memberId, suggestedById, notify = true) => {
   const role = await getById(roleId);
   const member = await User.findByPk(memberId);
   if (!member) throw { statusCode: 404, message: 'Member not found' };
   if (role.requires_type && member.member_type !== role.requires_type) {
     throw { statusCode: 400, message: `This role requires a ${role.requires_type}` };
   }
-  await role.update({ assigned_to_id: memberId, suggested_by_id: suggestedById, status: 'assigned' });
+  await role.update({ assigned_to_id: memberId, suggested_by_id: suggestedById, approved_by_id: suggestedById, status: 'approved' });
+
+  // Notify the assigned member (only on first assignment, not on reassign/update)
+  if (notify) {
+  const production = role.production_id ? await Production.findByPk(role.production_id, { attributes: ['title'] }) : null;
+  notificationService.send({
+    recipient_ids: [memberId],
+    sender_id: suggestedById,
+    type: 'role_assigned',
+    title: 'You have been assigned a role',
+    body: `You have been assigned the role "${role.title}"${production ? ` in ${production.title}` : ''}.`,
+  }).catch(() => {});
+  }
+
   return role;
 };
 

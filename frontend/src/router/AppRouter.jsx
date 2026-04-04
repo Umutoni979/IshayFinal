@@ -19,6 +19,7 @@ import RolesPage          from '../pages/roles/RolesPage';
 import RehearsalCalendarPage from '../pages/rehearsals/RehearsalCalendarPage';
 import AttendancePage     from '../pages/attendance/AttendancePage';
 import MyAttendancePage   from '../pages/attendance/MyAttendancePage';
+import MyRolesPage        from '../pages/roles/MyRolesPage';
 import ReportsPage        from '../pages/reports/ReportsPage';
 import ConflictsPage      from '../pages/conflicts/ConflictsPage';
 import NotificationsPage  from '../pages/notifications/NotificationsPage';
@@ -46,6 +47,7 @@ const AppRouter = () => (
           <Route path="/rehearsals"    element={<RehearsalCalendarPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/my-attendance" element={<MyAttendancePage />} />
+          <Route path="/my-roles"      element={<MyRolesPage />} />
 
           {/* Director + Coordinator only */}
           <Route element={<ProtectedRoute allowedRoles={['director', 'coordinator']} />}>

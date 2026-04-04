@@ -9,6 +9,9 @@ import { usersApi } from '../../api/usersApi';
 import { canDo } from '../../utils/permissions';
 import { formatDate, formatTime } from '../../utils/formatDate';
 import { Clapperboard, Film, CalendarDays, Users, AlertTriangle } from 'lucide-react';
+import EmptyState from '../../components/common/EmptyState';
+
+const BASIC_ROLES = ['actor', 'crew', 'guest'];
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '') || 'http://localhost:5000';
 
@@ -57,7 +60,7 @@ const statCards = [
 
 // ── Production card decorations ────────────────────────────────
 const statusConfig = {
-  planning:  { label: 'Planning',  badge: 'text-yellow-600', icon: 'bg-yellow-400', accent: '#fbbf24' },
+  planning:  { label: 'Planning',  badge: 'text-orange-600', icon: 'bg-orange-500', accent: '#f97316' },
   active:    { label: 'Active',    badge: 'text-green-600',  icon: 'bg-green-500',  accent: '#22c55e' },
   completed: { label: 'Completed', badge: 'text-blue-600',   icon: 'bg-blue-500',   accent: '#3b82f6' },
   cancelled: { label: 'Cancelled', badge: 'text-red-500',    icon: 'bg-red-400',    accent: '#f87171' },
@@ -104,18 +107,91 @@ const decoMap = {
   cancelled: (c) => <DecoWave color={c} />,
 };
 
+// ── Animated cartoon avatar ────────────────────────────────────
+const CartoonAvatar = () => (
+  <svg viewBox="0 0 64 64" width="46" height="46" xmlns="http://www.w3.org/2000/svg">
+    <style>{`
+      @keyframes avatarFloat {
+        0%,100% { transform: translateY(0px); }
+        50%      { transform: translateY(-2px); }
+      }
+      @keyframes avatarBlink {
+        0%,92%,100% { transform: scaleY(1); }
+        96%          { transform: scaleY(0.08); }
+      }
+      @keyframes avatarSmile {
+        0%,100% { d: path("M24 39 Q32 45 40 39"); }
+        50%     { d: path("M24 39 Q32 47 40 39"); }
+      }
+      .av-body { animation: avatarFloat 3s ease-in-out infinite; }
+      .av-eye-l { transform-origin: 23px 29px; animation: avatarBlink 4s ease-in-out infinite; }
+      .av-eye-r { transform-origin: 41px 29px; animation: avatarBlink 4s ease-in-out infinite; }
+    `}</style>
+
+    <g className="av-body">
+      {/* Neck */}
+      <rect x="27" y="47" width="10" height="7" rx="3" fill="#FDDCB5"/>
+      {/* Shoulders / body */}
+      <ellipse cx="32" cy="60" rx="15" ry="7" fill="#fff" opacity="0.35"/>
+
+      {/* Head */}
+      <ellipse cx="32" cy="30" rx="17" ry="18" fill="#FDDCB5"/>
+
+      {/* Hair */}
+      <ellipse cx="32" cy="13" rx="17" ry="8" fill="#4a2c0a"/>
+      <ellipse cx="17" cy="22" rx="5" ry="9" fill="#4a2c0a"/>
+      <ellipse cx="47" cy="22" rx="5" ry="9" fill="#4a2c0a"/>
+
+      {/* Ears */}
+      <ellipse cx="15" cy="30" rx="3.5" ry="4" fill="#F5C89A"/>
+      <ellipse cx="49" cy="30" rx="3.5" ry="4" fill="#F5C89A"/>
+
+      {/* Eyes whites */}
+      <ellipse cx="23" cy="29" rx="5" ry="5.5" fill="white"/>
+      <ellipse cx="41" cy="29" rx="5" ry="5.5" fill="white"/>
+
+      {/* Pupils */}
+      <g className="av-eye-l">
+        <circle cx="23" cy="30" r="3" fill="#2d1a0e"/>
+        <circle cx="24" cy="29" r="1" fill="white"/>
+      </g>
+      <g className="av-eye-r">
+        <circle cx="41" cy="30" r="3" fill="#2d1a0e"/>
+        <circle cx="42" cy="29" r="1" fill="white"/>
+      </g>
+
+      {/* Eyebrows */}
+      <path d="M19 23 Q23 20 27 23" stroke="#4a2c0a" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
+      <path d="M37 23 Q41 20 45 23" stroke="#4a2c0a" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
+
+      {/* Nose */}
+      <ellipse cx="32" cy="35" rx="2" ry="1.5" fill="#e8a87c" opacity="0.7"/>
+
+      {/* Smile */}
+      <path d="M24 40 Q32 47 40 40" stroke="#c0705a" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+      {/* Cheek blush */}
+      <ellipse cx="19" cy="37" rx="4" ry="2.5" fill="#f9a8a8" opacity="0.45"/>
+      <ellipse cx="45" cy="37" rx="4" ry="2.5" fill="#f9a8a8" opacity="0.45"/>
+    </g>
+  </svg>
+);
+
 // ── Main component ─────────────────────────────────────────────
 const DashboardPage = () => {
   const { user } = useAuth();
   const [tab, setTab] = useState('Overview');
   const isStaff = canDo(user?.role, 'users:read');
+  const isBasic = BASIC_ROLES.includes(user?.role);
 
   const { data: productions } = useQuery({ queryKey: ['productions'], queryFn: () => productionsApi.getAll().then(r => r.data.data.productions) });
   const { data: rehearsals }  = useQuery({ queryKey: ['rehearsals'],  queryFn: () => rehearsalsApi.getAll().then(r => r.data.data.rehearsals) });
   const { data: conflicts }   = useQuery({ queryKey: ['conflicts', 'open'], queryFn: () => conflictsApi.getAll({ status: 'open' }).then(r => r.data.data.conflicts), enabled: isStaff });
   const { data: members }     = useQuery({ queryKey: ['users'], queryFn: () => usersApi.getAll().then(r => r.data.data.users), enabled: isStaff });
 
-  const upcoming = rehearsals?.slice(0, 8) ?? [];
+  const today = new Date().toISOString().slice(0, 10);
+  const upcoming = (rehearsals ?? []).filter(r => r.date >= today).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 5);
+  const recent   = (rehearsals ?? []).filter(r => r.date <  today).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
 
   const statValues = {
     productions: productions?.length ?? '—',
@@ -130,10 +206,10 @@ const DashboardPage = () => {
 
       {/* ── Page header ── */}
       <div className="flex items-start gap-5 mb-6">
-        <div className="w-16 h-16 rounded-xl bg-orange-500 overflow-hidden flex items-center justify-center text-white font-black text-2xl shrink-0 shadow-sm">
+        <div className="w-16 h-16 rounded-xl bg-orange-500 overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
           {user?.profile_image
             ? <img src={`${API_BASE}${user.profile_image}`} alt="avatar" className="w-full h-full object-cover" />
-            : user?.name?.charAt(0).toUpperCase()
+            : <CartoonAvatar />
           }
         </div>
         <div>
@@ -148,11 +224,6 @@ const DashboardPage = () => {
         {visibleStats.map(({ key, label, icon: Icon, bg, accent, Deco }) => (
           <div key={key} className="relative overflow-hidden bg-white border border-gray-200 rounded-2xl p-5 min-h-[140px] flex flex-col justify-between">
             <Deco color={accent} />
-
-            {/* Top: icon */}
-            <div className={`relative z-10 w-10 h-10 rounded-xl ${bg} flex items-center justify-center shadow-sm`}>
-              <Icon size={18} className="text-white" />
-            </div>
 
             {/* Bottom: number + label */}
             <div className="relative z-10 mt-4">
@@ -177,12 +248,15 @@ const DashboardPage = () => {
       {/* ── Overview tab ── */}
       {tab === 'Overview' && (
         <div>
+
+
+          {/* Upcoming */}
           <h2 className="text-base font-black text-slate-800 mb-1">Upcoming Rehearsals</h2>
           <p className="text-sm text-gray-400 mb-4">Your next scheduled rehearsal sessions</p>
           {upcoming.length === 0 ? (
-            <p className="text-gray-400 text-sm">No upcoming rehearsals scheduled.</p>
+            <EmptyState type="rehearsals" message="No upcoming rehearsals." sub="Nothing scheduled yet — check back later." />
           ) : (
-            <div className="border border-gray-200 rounded-sm divide-y divide-gray-100">
+            <div className="border border-gray-200 rounded-sm divide-y divide-gray-100 mb-8">
               {upcoming.map((r) => (
                 <div key={r.id} className="flex justify-between items-center px-5 py-3.5">
                   <div>
@@ -197,6 +271,28 @@ const DashboardPage = () => {
               ))}
             </div>
           )}
+
+          {/* Recent */}
+          {recent.length > 0 && (
+            <>
+              <h2 className="text-base font-black text-slate-800 mb-1">Recent Rehearsals</h2>
+              <p className="text-sm text-gray-400 mb-4">Rehearsals that have already taken place</p>
+              <div className="border border-gray-200 rounded-sm divide-y divide-gray-100">
+                {recent.map((r) => (
+                  <div key={r.id} className="flex justify-between items-center px-5 py-3.5 opacity-70">
+                    <div>
+                      <p className="font-semibold text-slate-700 text-sm">{r.title}</p>
+                      <p className="text-xs text-gray-400">{r.location || '—'}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-gray-400 font-medium">{formatDate(r.date)}</p>
+                      {r.start_time && <p className="text-xs text-gray-400">{formatTime(r.start_time)}</p>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       )}
 
@@ -205,7 +301,7 @@ const DashboardPage = () => {
         <div>
           <h2 className="text-base font-black text-slate-800 mb-4">All Rehearsals</h2>
           {!rehearsals || rehearsals.length === 0 ? (
-            <p className="text-gray-400 text-sm">No rehearsals found.</p>
+            <EmptyState type="rehearsals" message="No rehearsals found." />
           ) : (
             <div className="border border-gray-200 rounded-sm divide-y divide-gray-100">
               {rehearsals.map((r) => (
@@ -230,7 +326,7 @@ const DashboardPage = () => {
         <div>
           <h2 className="text-base font-black text-slate-800 mb-5">All Productions</h2>
           {!productions || productions.length === 0 ? (
-            <p className="text-gray-400 text-sm">No productions found.</p>
+            <EmptyState type="productions" message="No productions found." sub="Create your first production to get started." />
           ) : (
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {productions.map(p => {

@@ -1,4 +1,9 @@
-const { User, SystemSetting } = require('../../models');
+const {
+  User, SystemSetting, Rehearsal, Attendance,
+  Role, Notification, Conflict, UserSession,
+  sequelize,
+} = require('../../models');
+const { Op } = require('sequelize');
 const { sendEmail } = require('../../utils/emailService');
 
 const getAllUsers = async () => User.findAll({ order: [['created_at', 'DESC']] });
@@ -99,7 +104,39 @@ const deleteUser = async (id, requesterId) => {
   if (id === requesterId) throw { statusCode: 400, message: 'You cannot delete your own account' };
   const user = await User.findByPk(id);
   if (!user) throw { statusCode: 404, message: 'User not found' };
-  await user.destroy();
+
+  const t = await sequelize.transaction();
+  try {
+    // 1. Sessions
+    await UserSession.destroy({ where: { user_id: id }, transaction: t });
+
+    // 2. Notifications (recipient or sender)
+    await Notification.destroy({ where: { [Op.or]: [{ recipient_id: id }, { sender_id: id }] }, transaction: t });
+
+    // 3. Attendance records (as member or marker)
+    await Attendance.destroy({ where: { [Op.or]: [{ member_id: id }, { marked_by_id: id }] }, transaction: t });
+
+    // 4. Roles — unassign if assigned, nullify suggested_by / approved_by references
+    await Role.update({ assigned_to_id: null, status: 'open' }, { where: { assigned_to_id: id }, transaction: t });
+    await Role.update({ suggested_by_id: null }, { where: { suggested_by_id: id }, transaction: t });
+    await Role.update({ approved_by_id: null  }, { where: { approved_by_id:  id }, transaction: t });
+
+    // 5. Remove from junction tables (RehearsalMember, ConflictMember, ProductionCoordinator)
+    await sequelize.query('DELETE FROM rehearsal_members WHERE user_id = :id',       { replacements: { id }, transaction: t });
+    await sequelize.query('DELETE FROM conflict_members WHERE user_id = :id',        { replacements: { id }, transaction: t });
+    await sequelize.query('DELETE FROM production_coordinators WHERE user_id = :id', { replacements: { id }, transaction: t });
+
+    // 6. Nullify soft refs on other records (keep the records, just remove the user link)
+    await Conflict.update({ resolved_by_id: null }, { where: { resolved_by_id: id }, transaction: t });
+
+    // 7. Finally delete the user
+    await user.destroy({ transaction: t });
+
+    await t.commit();
+  } catch (err) {
+    await t.rollback();
+    throw err;
+  }
 };
 
 const toggleRegistration = async (enable) => {
@@ -107,26 +144,71 @@ const toggleRegistration = async (enable) => {
   return enable;
 };
 
+// Auto-mark absent for today's rehearsals for members who didn't check in
+const autoMarkAbsent = async () => {
+  const today = new Date().toISOString().slice(0, 10);
+  const todayRehearsals = await Rehearsal.findAll({ where: { date: today } });
+  if (!todayRehearsals.length) return;
+
+  const members = await User.findAll({
+    where: { is_active: true, role: { [Op.in]: ['actor', 'crew', 'guest'] } },
+    attributes: ['id'],
+  });
+
+  for (const rehearsal of todayRehearsals) {
+    for (const member of members) {
+      await Attendance.findOrCreate({
+        where: { rehearsal_id: rehearsal.id, member_id: member.id },
+        defaults: { status: 'absent' },
+      });
+      // Only set absent if no record exists — don't overwrite present/late
+    }
+  }
+};
+
 const toggleSelfCheckin = async (enable) => {
+  if (!enable) {
+    await autoMarkAbsent();
+    await SystemSetting.upsert({ key: 'self_checkin_closes_at', value: '' });
+  }
   await SystemSetting.upsert({ key: 'allow_self_checkin', value: String(enable) });
   return enable;
 };
 
 const getSelfCheckinStatus = async () => {
-  const [enabledSetting, cutoffSetting] = await Promise.all([
+  const [enabledSetting, closesSetting] = await Promise.all([
     SystemSetting.findOne({ where: { key: 'allow_self_checkin' } }),
-    SystemSetting.findOne({ where: { key: 'self_checkin_cutoff' } }),
+    SystemSetting.findOne({ where: { key: 'self_checkin_closes_at' } }),
   ]);
-  const windowMinutes = cutoffSetting?.value ? parseInt(cutoffSetting.value) : 0;
+  const enabled  = enabledSetting ? enabledSetting.value === 'true' : false;
+  const closesAt = closesSetting?.value || null;
+  const isExpired = closesAt && new Date() > new Date(closesAt);
+
+  // Auto-mark absent and clean up when window expires
+  if (enabled && isExpired) {
+    await autoMarkAbsent();
+    await SystemSetting.upsert({ key: 'allow_self_checkin', value: 'false' });
+    await SystemSetting.upsert({ key: 'self_checkin_closes_at', value: '' });
+    return { enabled: false, closesAt: null };
+  }
+
   return {
-    enabled:       enabledSetting ? enabledSetting.value === 'true' : false,
-    windowMinutes: isNaN(windowMinutes) ? 0 : windowMinutes,
+    enabled:  enabled,
+    closesAt: closesAt || null,
   };
 };
 
-const setSelfCheckinCutoff = async (cutoff) => {
-  await SystemSetting.upsert({ key: 'self_checkin_cutoff', value: cutoff || '' });
-  return cutoff;
+// Admin opens self check-in with a window in minutes (0 = no limit)
+const openSelfCheckin = async (windowMinutes) => {
+  const mins = parseInt(windowMinutes) || 0;
+  await SystemSetting.upsert({ key: 'allow_self_checkin', value: 'true' });
+  if (mins > 0) {
+    const closesAt = new Date(Date.now() + mins * 60 * 1000).toISOString();
+    await SystemSetting.upsert({ key: 'self_checkin_closes_at', value: closesAt });
+  } else {
+    await SystemSetting.upsert({ key: 'self_checkin_closes_at', value: '' });
+  }
+  return { enabled: true, windowMinutes: mins };
 };
 
-module.exports = { getAllUsers, createUser, setUserStatus, changeUserRole, updateUserPermissions, toggleRegistration, toggleSelfCheckin, getSelfCheckinStatus, setSelfCheckinCutoff, updateUser, deleteUser };
+module.exports = { getAllUsers, createUser, setUserStatus, changeUserRole, updateUserPermissions, toggleRegistration, toggleSelfCheckin, getSelfCheckinStatus, openSelfCheckin, autoMarkAbsent, updateUser, deleteUser };

@@ -10,7 +10,7 @@ export const adminApi = {
   deleteUser:          (id)                       => api.delete(`/admin/users/${id}`),
   resendVerification:  (id)                       => api.post(`/admin/users/${id}/resend-verification`),
   toggleRegistration:   (enable) => api.post('/admin/settings/registration', { enable }),
-  getSelfCheckinStatus:  ()         => api.get('/admin/settings/self-checkin'),
-  toggleSelfCheckin:     (enable)   => api.post('/admin/settings/self-checkin', { enable }),
-  setSelfCheckinCutoff:  (cutoff)   => api.post('/admin/settings/self-checkin/cutoff', { cutoff }),
+  getSelfCheckinStatus:  ()              => api.get('/admin/settings/self-checkin'),
+  toggleSelfCheckin:     (enable)        => api.post('/admin/settings/self-checkin', { enable }),
+  openSelfCheckin:       (windowMinutes) => api.post('/admin/settings/self-checkin/open', { windowMinutes }),
 };

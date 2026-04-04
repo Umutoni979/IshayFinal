@@ -7,6 +7,7 @@ import { X, ShieldCheck, UserPlus, Lock, Pencil, Trash2, MoreVertical, ScanLine 
 import { ROLES } from '../../utils/constants';
 import SearchFilters from '../../components/common/SearchFilters';
 import DataTable from '../../components/common/DataTable';
+import { TableSkeleton } from '../../components/common/Skeleton';
 
 const PERMISSION_GROUPS = [
   { page: 'Admin Page',        path: '/admin',        perms: ['users:read', 'users:write', 'admin:manage'] },
@@ -82,12 +83,11 @@ const AdminPage = () => {
     staleTime: Infinity,
     refetchOnWindowFocus: false,
   });
-  const selfCheckinStatus  = selfCheckinData?.enabled;
-  const selfCheckinWindow  = selfCheckinData?.windowMinutes ?? 0;
+  const selfCheckinStatus = selfCheckinData?.enabled;
+  const selfCheckinClosesAt = selfCheckinData?.closesAt || null;
 
-  useEffect(() => {
-    if (showCheckinSettings) setCutoffInput(String(selfCheckinWindow));
-  }, [showCheckinSettings, selfCheckinWindow]);
+  const [windowInput, setWindowInput] = useState('0');
+  const [extendInput, setExtendInput] = useState('');
 
   const toggleRegMutation = useMutation({
     mutationFn: (enable) => adminApi.toggleRegistration(enable),
@@ -98,21 +98,26 @@ const AdminPage = () => {
     onError: () => toast.error('Failed to update setting'),
   });
 
-  const [cutoffInput, setCutoffInput] = useState('');
-
-  const toggleSelfCheckinMutation = useMutation({
-    mutationFn: (enable) => adminApi.toggleSelfCheckin(enable),
-    onSuccess: (_, enable) => {
+  const closeSelfCheckinMutation = useMutation({
+    mutationFn: () => adminApi.toggleSelfCheckin(false),
+    onSuccess: () => {
       queryClient.invalidateQueries(['self-checkin-status']);
-      toast.success(`Self check-in ${enable ? 'enabled' : 'disabled'}`);
+      queryClient.invalidateQueries(['self-checkin-status-member']);
+      setShowCheckinSettings(false);
+      toast.success('Self check-in closed');
     },
-    onError: () => toast.error('Failed to update setting'),
+    onError: () => toast.error('Failed to close check-in'),
   });
 
-  const cutoffMutation = useMutation({
-    mutationFn: (minutes) => adminApi.setSelfCheckinCutoff(minutes),
-    onSuccess: () => { queryClient.invalidateQueries(['self-checkin-status']); toast.success('Window saved'); },
-    onError: () => toast.error('Failed to save window'),
+  const openSelfCheckinMutation = useMutation({
+    mutationFn: (windowMinutes) => adminApi.openSelfCheckin(windowMinutes),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['self-checkin-status']);
+      queryClient.invalidateQueries(['self-checkin-status-member']);
+      setShowCheckinSettings(false);
+      toast.success('Self check-in opened!');
+    },
+    onError: () => toast.error('Failed to open check-in'),
   });
 
   const createMutation = useMutation({
@@ -204,49 +209,100 @@ const AdminPage = () => {
       {showCheckinSettings && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-5">
               <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
                 <ScanLine size={18} /> Self Check-in
               </h2>
               <button onClick={() => setShowCheckinSettings(false)}><X size={20} className="text-gray-400" /></button>
             </div>
 
-            {/* Toggle */}
-            <div className={`flex items-center justify-between p-4 rounded-xl border-2 mb-4 ${selfCheckinStatus ? 'border-indigo-200 bg-indigo-50' : 'border-gray-200 bg-gray-50'}`}>
+            {selfCheckinStatus ? (
+              /* ── Currently OPEN ── */
               <div>
-                <p className="text-sm font-semibold text-slate-700">Allow members to self check-in</p>
-                <p className="text-xs text-gray-400 mt-0.5">{selfCheckinStatus ? 'Currently enabled' : 'Currently disabled'}</p>
-              </div>
-              <button
-                onClick={() => toggleSelfCheckinMutation.mutate(!selfCheckinStatus)}
-                disabled={toggleSelfCheckinMutation.isPending}
-                className={`relative inline-flex items-center w-11 h-6 rounded-full transition-colors ${selfCheckinStatus ? 'bg-indigo-600' : 'bg-gray-300'} disabled:opacity-50`}
-              >
-                <span className={`inline-block w-4 h-4 bg-white rounded-full shadow transition-transform ${selfCheckinStatus ? 'translate-x-6' : 'translate-x-1'}`} />
-              </button>
-            </div>
+                <div className="text-center mb-4">
+                  <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <ScanLine size={24} className="text-green-600" />
+                  </div>
+                  <p className="font-semibold text-slate-800 mb-1">Check-in is open</p>
+                  {selfCheckinClosesAt ? (
+                    <p className="text-sm text-gray-500">
+                      Closes at <strong>{new Date(selfCheckinClosesAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong>
+                    </p>
+                  ) : (
+                    <p className="text-sm text-gray-400">No time limit</p>
+                  )}
+                </div>
 
-            {/* Check-in window */}
-            {selfCheckinStatus && (
-              <div className="mb-4">
-                <label className="block text-xs font-medium text-gray-600 mb-2">
-                  How long can members check in after rehearsal starts?
-                </label>
-                <div className="grid grid-cols-3 gap-2 mb-3">
+                {/* Extend time */}
+                <div className="border-t border-gray-100 pt-4 mb-4">
+                  <p className="text-xs font-medium text-gray-500 mb-2">Extend by</p>
+                  <div className="flex gap-2 mb-2">
+                    {[15, 30, 60].map(mins => (
+                      <button
+                        key={mins}
+                        onClick={() => {
+                          const base = selfCheckinClosesAt ? new Date(selfCheckinClosesAt).getTime() : Date.now();
+                          openSelfCheckinMutation.mutate(Math.round((base + mins * 60 * 1000 - Date.now()) / 60000));
+                        }}
+                        disabled={openSelfCheckinMutation.isPending}
+                        className="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 py-2 rounded-lg text-xs font-semibold disabled:opacity-60 transition-colors"
+                      >
+                        +{mins < 60 ? `${mins}m` : '1h'}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder="Custom minutes…"
+                      value={extendInput}
+                      onChange={e => setExtendInput(e.target.value)}
+                      className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                    />
+                    <button
+                      onClick={() => {
+                        const mins = parseInt(extendInput);
+                        if (!mins || mins < 1) return;
+                        const base = selfCheckinClosesAt ? new Date(selfCheckinClosesAt).getTime() : Date.now();
+                        openSelfCheckinMutation.mutate(Math.round((base + mins * 60 * 1000 - Date.now()) / 60000));
+                        setExtendInput('');
+                      }}
+                      disabled={!extendInput || openSelfCheckinMutation.isPending}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 rounded-lg text-sm font-semibold disabled:opacity-40 transition-colors"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => closeSelfCheckinMutation.mutate()}
+                  disabled={closeSelfCheckinMutation.isPending}
+                  className="w-full bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-lg text-sm font-semibold disabled:opacity-60 transition-colors"
+                >
+                  {closeSelfCheckinMutation.isPending ? 'Closing…' : 'Close Check-in Now'}
+                </button>
+              </div>
+            ) : (
+              /* ── Currently CLOSED — pick window and open ── */
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-3">How long will check-in be open?</p>
+                <div className="grid grid-cols-3 gap-2 mb-4">
                   {[
-                    { label: 'No limit',  value: '0' },
-                    { label: '15 min',    value: '15' },
-                    { label: '30 min',    value: '30' },
-                    { label: '1 hour',    value: '60' },
-                    { label: '2 hours',   value: '120' },
-                    { label: '3 hours',   value: '180' },
+                    { label: 'No limit', value: '0' },
+                    { label: '15 min',   value: '15' },
+                    { label: '30 min',   value: '30' },
+                    { label: '1 hour',   value: '60' },
+                    { label: '2 hours',  value: '120' },
+                    { label: '3 hours',  value: '180' },
                   ].map(opt => (
                     <button
                       key={opt.value}
                       type="button"
-                      onClick={() => setCutoffInput(opt.value)}
-                      className={`py-2 rounded-lg text-xs font-semibold border transition-colors ${
-                        cutoffInput === opt.value
+                      onClick={() => setWindowInput(opt.value)}
+                      className={`py-2.5 rounded-lg text-xs font-semibold border transition-colors ${
+                        windowInput === opt.value
                           ? 'bg-indigo-600 text-white border-indigo-600'
                           : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-400'
                       }`}
@@ -256,24 +312,14 @@ const AdminPage = () => {
                   ))}
                 </div>
                 <button
-                  onClick={() => cutoffMutation.mutate(cutoffInput)}
-                  disabled={cutoffMutation.isPending}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-sm font-medium disabled:opacity-60 transition-colors"
+                  onClick={() => openSelfCheckinMutation.mutate(parseInt(windowInput))}
+                  disabled={openSelfCheckinMutation.isPending}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-semibold disabled:opacity-60 transition-colors"
                 >
-                  {cutoffMutation.isPending ? 'Saving…' : 'Save'}
+                  {openSelfCheckinMutation.isPending ? 'Opening…' : 'Open Check-in'}
                 </button>
-                <p className="text-xs text-gray-400 mt-2 text-center">
-                  {selfCheckinWindow > 0
-                    ? `Members have ${selfCheckinWindow >= 60 ? `${selfCheckinWindow / 60} hour${selfCheckinWindow > 60 ? 's' : ''}` : `${selfCheckinWindow} minutes`} after rehearsal starts to check in`
-                    : 'No limit — members can check in any time'}
-                </p>
               </div>
             )}
-
-            <button onClick={() => setShowCheckinSettings(false)}
-              className="w-full bg-slate-700 hover:bg-slate-800 text-white py-2 rounded-lg text-sm font-medium transition-colors">
-              Done
-            </button>
           </div>
         </div>
       )}
@@ -574,7 +620,7 @@ const AdminPage = () => {
             />
             {/* ── Users Table ── */}
             {isLoading ? (
-              <div className="text-gray-400 text-sm">Loading…</div>
+              <TableSkeleton rows={4} />
             ) : (
               <DataTable
                 columns={[

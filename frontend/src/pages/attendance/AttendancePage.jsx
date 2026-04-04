@@ -5,6 +5,7 @@ import { attendanceApi } from '../../api/attendanceApi';
 import { usersApi } from '../../api/usersApi';
 import toast from 'react-hot-toast';
 import { ClipboardCheck, Check, Lock } from 'lucide-react';
+import { TableSkeleton } from '../../components/common/Skeleton';
 
 const STATUS_OPTIONS = ['present', 'absent', 'late', 'excused'];
 
@@ -100,7 +101,7 @@ const AttendancePage = () => {
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2 mb-6">
-        <ClipboardCheck size={24} /> Attendance Tracking
+        Attendance Tracking
       </h1>
 
       <div className="mb-6 flex items-center gap-4 flex-wrap">
@@ -129,7 +130,7 @@ const AttendancePage = () => {
       {selectedRehearsal && (
         <>
           {loadingAttendance ? (
-            <div className="text-gray-400 text-sm">Loading…</div>
+            <TableSkeleton rows={5} />
           ) : rows.length === 0 ? (
             <div className="text-gray-400 text-sm">
               {isPast ? 'No attendance was recorded for this rehearsal.' : 'No members found.'}

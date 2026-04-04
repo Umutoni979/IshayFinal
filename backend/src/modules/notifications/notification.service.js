@@ -1,5 +1,6 @@
 const { Notification, User } = require('../../models');
 const { sendEmail } = require('../../utils/emailService');
+const { getIO } = require('../../socket');
 
 const getForUser = async (userId) => {
   return Notification.findAll({
@@ -22,6 +23,14 @@ const send = async ({ recipient_ids, sender_id, type, title, body, channel = 'in
       related_entity_id,
     }))
   );
+
+  // Emit real-time socket events to each recipient
+  const io = getIO();
+  if (io) {
+    for (let i = 0; i < recipient_ids.length; i++) {
+      io.to(`user_${recipient_ids[i]}`).emit('notification', notifications[i]);
+    }
+  }
 
   // Send email if channel is email or all
   if (channel === 'email' || channel === 'all') {

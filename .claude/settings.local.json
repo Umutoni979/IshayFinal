@@ -3,7 +3,8 @@
     "allow": [
       "Bash(cd /c/Users/pc/Desktop/\"Final year project\")",
       "Bash(\"c:/Users/pc/Desktop/Final year:*)",
-      "Bash(node -e \":*)"
+      "Bash(node -e \":*)",
+      "Bash(npm run:*)"
     ]
   }
 }

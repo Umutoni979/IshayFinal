@@ -6,4 +6,5 @@ export const conflictsApi = {
   getForMember: (memberId) => api.get(`/conflicts/member/${memberId}`),
   resolve:      (id, resolution) => api.put(`/conflicts/${id}/resolve`, { resolution }),
   ignore:       (id)       => api.put(`/conflicts/${id}/ignore`),
+  detect:       ()         => api.post('/conflicts/detect'),
 };

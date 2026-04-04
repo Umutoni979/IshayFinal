@@ -1,10 +1,85 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 import { attendanceApi } from '../../api/attendanceApi';
 import { rehearsalsApi } from '../../api/rehearsalsApi';
 import { adminApi } from '../../api/adminApi';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
-import { ClipboardCheck, Check } from 'lucide-react';
+import { ClipboardCheck, Check, Timer } from 'lucide-react';
+import { InlineSkeleton } from '../../components/common/Skeleton';
+import EmptyState from '../../components/common/EmptyState';
+
+// Countdown to an absolute ISO timestamp
+const useCountdownTo = (closesAt) => {
+  const [display, setDisplay] = useState(null);
+
+  useEffect(() => {
+    if (!closesAt) { setDisplay(null); return; }
+    const target = new Date(closesAt).getTime();
+
+    const tick = () => {
+      const diff = target - Date.now();
+      if (diff <= 0) { setDisplay('closed'); return; }
+      const totalSecs = Math.floor(diff / 1000);
+      const hrs  = Math.floor(totalSecs / 3600);
+      const mins = Math.floor((totalSecs % 3600) / 60);
+      const secs = totalSecs % 60;
+      if (hrs > 0)       setDisplay(`${hrs}h ${mins}m`);
+      else if (mins > 0) setDisplay(`${mins}m ${secs}s`);
+      else               setDisplay(`${secs}s`);
+    };
+
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [closesAt]);
+
+  return display;
+};
+
+// Per-rehearsal card with global countdown
+const RehearsalCheckinCard = ({ rehearsal, record, closesAt, onCheckin, isPending }) => {
+  const countdown = useCountdownTo(closesAt);
+  const closed    = countdown === 'closed';
+  const closeTime = closesAt ? new Date(closesAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null;
+
+  return (
+    <div className="bg-white border border-gray-100 rounded-xl px-4 py-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="font-semibold text-slate-800 text-sm">{rehearsal.title}</p>
+          <p className="text-xs text-gray-400 mt-0.5">
+            {rehearsal.start_time?.slice(0, 5)} – {rehearsal.end_time?.slice(0, 5)}
+            {rehearsal.location && <span> · {rehearsal.location}</span>}
+          </p>
+          {!record && !closed && countdown && (
+            <p className="text-xs text-amber-500 mt-1 flex items-center gap-1">
+              <Timer size={11} /> Closes at {closeTime} · <span className="font-semibold">{countdown}</span> left
+            </p>
+          )}
+          {!record && closed && (
+            <p className="text-xs text-red-400 mt-1">Check-in closed</p>
+          )}
+        </div>
+
+        {record ? (
+          <span className={`shrink-0 px-3 py-1 rounded-full text-xs font-semibold ${statusStyle[record.status]}`}>
+            {record.status === 'present' && <Check size={10} className="inline mr-1" />}
+            {record.status}
+          </span>
+        ) : closed ? null : (
+          <button
+            onClick={onCheckin}
+            disabled={isPending}
+            className="shrink-0 bg-green-500 hover:bg-green-600 text-white px-4 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-60 transition-colors"
+          >
+            Check In
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const statusStyle = {
   present: 'bg-green-100 text-green-700',
@@ -25,16 +100,7 @@ const MyAttendancePage = () => {
     refetchInterval: 30_000,
   });
   const selfCheckinEnabled = selfCheckinData?.enabled;
-  const windowMinutes      = selfCheckinData?.windowMinutes ?? 0;
-
-  const getCloseTime = (startTime) => {
-    if (!windowMinutes || !startTime) return null;
-    const [h, m] = startTime.split(':').map(Number);
-    const closeMins = h * 60 + m + windowMinutes;
-    const ch = Math.floor(closeMins / 60) % 24;
-    const cm = closeMins % 60;
-    return `${String(ch).padStart(2, '0')}:${String(cm).padStart(2, '0')}`;
-  };
+  const selfCheckinClosesAt = selfCheckinData?.closesAt || null;
 
   const { data: myAttendance = [], isLoading } = useQuery({
     queryKey: ['my-attendance', user?.id],
@@ -75,7 +141,7 @@ const MyAttendancePage = () => {
   return (
     <div className="max-w-2xl">
       <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2 mb-6">
-        <ClipboardCheck size={24} /> My Attendance
+        My Attendance
       </h1>
 
       {/* Today section */}
@@ -92,42 +158,16 @@ const MyAttendancePage = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {todayRehearsals.map(rehearsal => {
-              const record = getRecord(rehearsal.id);
-              return (
-                <div key={rehearsal.id} className="bg-white border border-gray-100 rounded-xl px-4 py-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold text-slate-800 text-sm">{rehearsal.title}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">
-                        {rehearsal.start_time?.slice(0, 5)} – {rehearsal.end_time?.slice(0, 5)}
-                        {rehearsal.location && <span> · {rehearsal.location}</span>}
-                      </p>
-                      {!record && getCloseTime(rehearsal.start_time) && (
-                        <p className="text-xs text-amber-500 mt-0.5">
-                          Check-in closes at {getCloseTime(rehearsal.start_time)}
-                        </p>
-                      )}
-                    </div>
-
-                    {record ? (
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusStyle[record.status]}`}>
-                        {record.status === 'present' && <Check size={10} className="inline mr-1" />}
-                        {record.status}
-                      </span>
-                    ) : (
-                      <button
-                        onClick={() => selfCheckinMutation.mutate({ rehearsalId: rehearsal.id, status: 'present' })}
-                        disabled={selfCheckinMutation.isPending}
-                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-60 transition-colors"
-                      >
-                        Check In
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+            {todayRehearsals.map(rehearsal => (
+              <RehearsalCheckinCard
+                key={rehearsal.id}
+                rehearsal={rehearsal}
+                record={getRecord(rehearsal.id)}
+                closesAt={selfCheckinClosesAt}
+                onCheckin={() => selfCheckinMutation.mutate({ rehearsalId: rehearsal.id, status: 'present' })}
+                isPending={selfCheckinMutation.isPending}
+              />
+            ))}
           </div>
         )}
       </div>
@@ -137,9 +177,9 @@ const MyAttendancePage = () => {
         <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Attendance History</h2>
 
         {isLoading ? (
-          <div className="text-gray-400 text-sm">Loading…</div>
+          <InlineSkeleton rows={3} />
         ) : pastRecords.length === 0 ? (
-          <div className="text-gray-400 text-sm">No attendance records yet.</div>
+          <EmptyState type="attendance" message="No attendance records yet." />
         ) : (
           <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
             <table className="w-full text-sm">

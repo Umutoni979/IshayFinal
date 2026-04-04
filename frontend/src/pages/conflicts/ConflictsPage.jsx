@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { conflictsApi } from '../../api/conflictsApi';
 import toast from 'react-hot-toast';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle, ScanSearch } from 'lucide-react';
 import SearchFilters from '../../components/common/SearchFilters';
+import { ListSkeleton } from '../../components/common/Skeleton';
+import EmptyState from '../../components/common/EmptyState';
 
 const severityColor = { low: 'bg-blue-100 text-blue-700', medium: 'bg-yellow-100 text-yellow-700', high: 'bg-red-100 text-red-700' };
 
@@ -28,6 +30,16 @@ const ConflictsPage = () => {
     onSuccess: () => { queryClient.invalidateQueries(['conflicts']); toast.success('Conflict ignored'); },
   });
 
+  const detectMutation = useMutation({
+    mutationFn: () => conflictsApi.detect(),
+    onSuccess: (res) => {
+      queryClient.invalidateQueries(['conflicts']);
+      const count = res.data.data.detected;
+      toast.success(count > 0 ? `${count} new conflict(s) detected` : 'No new conflicts found');
+    },
+    onError: () => toast.error('Scan failed'),
+  });
+
   const filtered = conflicts.filter(c => {
     const matchSearch   = !search         || c.description?.toLowerCase().includes(search.toLowerCase());
     const matchStatus   = !statusFilter   || c.status === statusFilter;
@@ -37,8 +49,18 @@ const ConflictsPage = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-black text-slate-800 mb-1">Conflict Detection</h1>
-      <p className="text-sm text-gray-400 mb-6">Schedule and role conflicts detected across productions</p>
+      <div className="flex items-center justify-between mb-1">
+        <h1 className="text-2xl font-black text-slate-800">Conflict Detection</h1>
+        <button
+          onClick={() => detectMutation.mutate()}
+          disabled={detectMutation.isPending}
+          className="flex items-center gap-1.5 bg-slate-500 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors disabled:opacity-60">
+          <ScanSearch size={15} /> {detectMutation.isPending ? 'Scanning…' : 'Scan for Conflicts'}
+        </button>
+      </div>
+      <p className="text-sm text-gray-400 mb-6">
+        Checks if any member is assigned to two different productions that have rehearsals on the same day at the same time — e.g. a member is in Production A (9am–11am) and Production B (10am–12pm) on the same day.
+      </p>
 
       <SearchFilters
         search={search}
@@ -50,9 +72,9 @@ const ConflictsPage = () => {
         ]}
       />
 
-      {isLoading ? <div className="text-gray-400">Loading…</div> : (
+      {isLoading ? <ListSkeleton rows={3} /> : (
         <div className="space-y-3">
-          {filtered.length === 0 && <div className="text-gray-400 bg-white rounded-sm border border-gray-200 p-6 text-center">No conflicts found.</div>}
+          {filtered.length === 0 && <div className="bg-white rounded-sm border border-gray-200"><EmptyState type="conflicts" message="No conflicts found." sub="Run a scan to check for scheduling overlaps." /></div>}
           {filtered.map(conflict => (
             <div key={conflict.id} className="bg-white rounded-sm border border-gray-200 p-5">
               <div className="flex justify-between items-start mb-2">

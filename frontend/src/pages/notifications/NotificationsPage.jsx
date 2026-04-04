@@ -3,6 +3,8 @@ import { notificationsApi } from '../../api/notificationsApi';
 import { timeAgo } from '../../utils/formatDate';
 import toast from 'react-hot-toast';
 import { Bell, CheckCheck } from 'lucide-react';
+import { ListSkeleton } from '../../components/common/Skeleton';
+import EmptyState from '../../components/common/EmptyState';
 
 const NotificationsPage = () => {
   const queryClient = useQueryClient();
@@ -26,7 +28,7 @@ const NotificationsPage = () => {
     <div className="max-w-2xl">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-          <Bell size={24} /> Notifications
+          Notifications
         </h1>
         <button
           onClick={() => markAllMutation.mutate()}
@@ -37,9 +39,9 @@ const NotificationsPage = () => {
       </div>
 
       <div className="space-y-2">
-        {isLoading && <div className="text-gray-400">Loading…</div>}
+        {isLoading && <ListSkeleton rows={4} />}
         {!isLoading && notifications.length === 0 && (
-          <div className="text-center text-gray-400 py-12">No notifications yet.</div>
+          <EmptyState type="notifications" message="No notifications yet." sub="You'll be notified when something happens." />
         )}
         {notifications.map(n => (
           <div
@@ -52,7 +54,7 @@ const NotificationsPage = () => {
               <span className="text-xs text-gray-400">{timeAgo(n.created_at)}</span>
             </div>
             <p className="text-sm text-gray-500">{n.body}</p>
-            <p className="text-xs text-gray-400 mt-1">{n.type.replace('_', ' ')}</p>
+            <p className="text-xs text-gray-400 mt-1">{n.type.replaceAll('_', ' ')}</p>
           </div>
         ))}
       </div>

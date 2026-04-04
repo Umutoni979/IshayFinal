@@ -3,6 +3,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const app = require('./src/app');
 const { connectDB } = require('./src/config/database');
+const socketModule = require('./src/socket');
 
 const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
@@ -16,8 +17,9 @@ const io = new Server(server, {
   },
 });
 
-// Store io instance on app for use in controllers/services
+// Store io instance on app and in singleton module
 app.set('io', io);
+socketModule.init(io);
 
 io.on('connection', (socket) => {
   console.log(`Socket connected: ${socket.id}`);

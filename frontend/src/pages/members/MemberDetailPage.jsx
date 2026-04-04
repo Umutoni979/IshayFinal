@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { usersApi } from '../../api/usersApi';
+import { DetailSkeleton } from '../../components/common/Skeleton';
 
 const MemberDetailPage = () => {
   const { id } = useParams();
@@ -13,7 +14,7 @@ const MemberDetailPage = () => {
     queryFn: () => usersApi.getAttendanceSummary(id).then(r => r.data.data.summary),
   });
 
-  if (isLoading) return <div className="text-gray-500">Loading…</div>;
+  if (isLoading) return <DetailSkeleton />;
 
   return (
     <div className="max-w-2xl">

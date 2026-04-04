@@ -6,9 +6,11 @@ import { formatDate } from '../../utils/formatDate';
 import usePermission from '../../hooks/usePermission';
 import toast from 'react-hot-toast';
 import { Clapperboard, X } from 'lucide-react';
+import { CardsSkeleton } from '../../components/common/Skeleton';
+import EmptyState from '../../components/common/EmptyState';
 
 const statusConfig = {
-  planning:  { label: 'Planning',  badge: 'text-yellow-600', icon: 'bg-yellow-400', accent: '#fbbf24' },
+  planning:  { label: 'Planning',  badge: 'text-orange-600', icon: 'bg-orange-500', accent: '#f97316' },
   active:    { label: 'Active',    badge: 'text-green-600',  icon: 'bg-green-500',  accent: '#22c55e' },
   completed: { label: 'Completed', badge: 'text-blue-600',   icon: 'bg-blue-500',   accent: '#3b82f6' },
   cancelled: { label: 'Cancelled', badge: 'text-red-500',    icon: 'bg-red-400',    accent: '#f87171' },
@@ -84,14 +86,14 @@ const ProductionsPage = () => {
 
   const set = (field) => (e) => setForm(f => ({ ...f, [field]: e.target.value }));
 
-  if (isLoading) return <div className="text-gray-400 text-sm">Loading…</div>;
+  if (isLoading) return <CardsSkeleton />;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-black text-slate-800 flex items-center gap-2">
-            <Clapperboard size={22} /> Productions
+            Productions
           </h1>
           <p className="text-sm text-gray-400 mt-0.5">Manage all troup productions</p>
         </div>
@@ -168,12 +170,8 @@ const ProductionsPage = () => {
 
       {/* ── Productions grid ── */}
       {!data || data.length === 0 ? (
-        <div className="text-center py-20 text-gray-400">
-          <Clapperboard size={40} className="mx-auto mb-3 opacity-30" />
-          <p className="text-sm font-medium">No productions yet</p>
-          {canWrite && (
-            <p className="text-xs mt-1">Click <span className="font-semibold">+ Production</span> to create the first one</p>
-          )}
+        <div>
+          <EmptyState type="productions" message="No productions yet" sub={canWrite ? 'Click + Production to create the first one.' : undefined} />
         </div>
       ) : (
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">

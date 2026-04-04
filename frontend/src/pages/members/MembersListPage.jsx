@@ -4,6 +4,7 @@ import { usersApi } from '../../api/usersApi';
 import { formatDate } from '../../utils/formatDate';
 import SearchFilters from '../../components/common/SearchFilters';
 import DataTable from '../../components/common/DataTable';
+import { TableSkeleton } from '../../components/common/Skeleton';
 
 const columns = [
   { key: 'name',        label: 'Name',   render: r => <span className="font-medium text-slate-800">{r.name}</span> },
@@ -40,7 +41,7 @@ const MembersListPage = () => {
     return matchSearch && matchRole && matchStatus && matchType;
   });
 
-  if (isLoading) return <div className="text-gray-400 text-sm">Loading members…</div>;
+  if (isLoading) return <TableSkeleton />;
 
   return (
     <div>

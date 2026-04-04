@@ -1,5 +1,7 @@
 const { Rehearsal, User, Production, Attendance } = require('../../models');
 const { detectScheduleConflicts } = require('../../utils/conflictDetector');
+const notificationService = require('../notifications/notification.service');
+const { Op } = require('sequelize');
 
 const getAll = async (filters = {}) => {
   const where = {};
@@ -73,6 +75,24 @@ const create = async (data, createdById) => {
     await Promise.all(rehearsals.map(r => r.setMembers(member_ids)));
   }
   await Promise.all(rehearsals.map(r => detectScheduleConflicts(r.id)));
+
+  // Notify all active members
+  const members = await User.findAll({
+    where: { is_active: true, role: { [Op.in]: ['actor', 'crew', 'guest'] } },
+    attributes: ['id'],
+  });
+  if (members.length > 0) {
+    const first = rehearsals[0];
+    notificationService.send({
+      recipient_ids: members.map(m => m.id),
+      sender_id: createdById,
+      type: 'rehearsal_scheduled',
+      title: 'New rehearsal scheduled',
+      body: `"${first.title}" has been scheduled on ${first.date} at ${first.start_time}.`,
+      related_entity_type: 'rehearsal',
+      related_entity_id: first.id,
+    }).catch(() => {});
+  }
 
   return rehearsals.length === 1 ? rehearsals[0] : rehearsals;
 };
