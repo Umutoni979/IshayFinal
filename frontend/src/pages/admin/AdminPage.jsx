@@ -9,6 +9,34 @@ import SearchFilters from '../../components/common/SearchFilters';
 import DataTable from '../../components/common/DataTable';
 import { TableSkeleton } from '../../components/common/Skeleton';
 
+const ROLE_DESCRIPTIONS = {
+  director:    'Full access to all system functions',
+  coordinator: 'Manages rehearsals, attendance and member assignments',
+  actor:       'Can view own profile, roles and attendance',
+  crew:        'Can view own profile and crew assignments',
+  guest:       'Read-only access to basic pages',
+};
+
+const PERM_LABELS = {
+  'users:read':           'VIEW USERS',
+  'users:write':          'MANAGE USERS',
+  'admin:manage':         'ADMIN ACCESS',
+  'productions:write':    'MANAGE PRODUCTIONS',
+  'productions:delete':   'DELETE PRODUCTIONS',
+  'productions:view':     'VIEW PRODUCTIONS',
+  'roles:write':          'MANAGE ROLES',
+  'roles:approve':        'APPROVE ROLES',
+  'rehearsals:write':     'MANAGE REHEARSALS',
+  'rehearsals:delete':    'DELETE REHEARSALS',
+  'rehearsals:view':      'VIEW REHEARSALS',
+  'attendance:write':     'MARK ATTENDANCE',
+  'reports:read':         'VIEW REPORTS',
+  'reports:export':       'EXPORT REPORTS',
+  'conflicts:resolve':    'RESOLVE CONFLICTS',
+  'notifications:send':   'SEND NOTIFICATIONS',
+  'notifications:view':   'VIEW NOTIFICATIONS',
+};
+
 const PERMISSION_GROUPS = [
   { page: 'Admin Page',        path: '/admin',        perms: ['users:read', 'users:write', 'admin:manage'] },
   { page: 'Productions',       path: '/productions',  perms: ['productions:write', 'productions:delete'] },
@@ -57,6 +85,14 @@ const AdminPage = () => {
   const [roleFilter, setRoleFilter]   = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [openDropdown, setOpenDropdown] = useState(null); // { id, top, left }
+  const [activeTab, setActiveTab] = useState('users');
+  const [editRoleModal, setEditRoleModal] = useState(null); // { role, perms[] }
+  const [rolePermissions, setRolePermissions] = useState(() => {
+    try {
+      const saved = localStorage.getItem('ishya_role_permissions');
+      return saved ? JSON.parse(saved) : ROLE_DEFAULT_PERMISSIONS;
+    } catch { return ROLE_DEFAULT_PERMISSIONS; }
+  });
 
   useEffect(() => {
     if (!openDropdown) return;
@@ -167,6 +203,14 @@ const AdminPage = () => {
     setShowPermissions(user); // store full user to know role
   };
 
+  const saveRolePermissions = (roleName, perms) => {
+    const updated = { ...rolePermissions, [roleName]: perms };
+    setRolePermissions(updated);
+    localStorage.setItem('ishya_role_permissions', JSON.stringify(updated));
+    toast.success('Role permissions updated');
+    setEditRoleModal(null);
+  };
+
   const openEdit = (user) => {
     setEditForm({ name: user.name, phone: user.phone || '', member_type: user.member_type || '' });
     setShowEdit(user);
@@ -203,6 +247,21 @@ const AdminPage = () => {
             + User
           </button>
         </div>
+      </div>
+
+      {/* ── Tabs ── */}
+      <div className="flex gap-0 mb-6 border-b border-gray-200">
+        {[['users', 'Users'], ['roles', 'Roles & Permissions']].map(([key, label]) => (
+          <button
+            key={key}
+            onClick={() => setActiveTab(key)}
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === key ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-slate-700'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
       </div>
 
       {/* ── Self Check-in Settings Modal ── */}
@@ -598,8 +657,88 @@ const AdminPage = () => {
         </div>
       )}
 
+      {/* ── Role Permissions Edit Modal ── */}
+      {editRoleModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <div className="flex justify-between items-center mb-1">
+              <h2 className="text-lg font-bold text-slate-800 capitalize">{editRoleModal.role} Permissions</h2>
+              <button onClick={() => setEditRoleModal(null)}><X size={20} className="text-gray-400" /></button>
+            </div>
+            <p className="text-xs text-gray-400 mb-4">{ROLE_DESCRIPTIONS[editRoleModal.role]}</p>
+            <div className="max-h-72 overflow-y-auto border border-gray-200 rounded p-3 mb-4 space-y-3">
+              {PERMISSION_GROUPS.map(group => (
+                <div key={group.page}>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">{group.page}</span>
+                    <div className="flex-1 h-px bg-gray-100" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-0.5 pl-1">
+                    {group.perms.map(perm => (
+                      <label key={perm} className="flex items-center gap-2 text-xs py-0.5 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={editRoleModal.perms.includes(perm)}
+                          onChange={() => {
+                            const next = editRoleModal.perms.includes(perm)
+                              ? editRoleModal.perms.filter(p => p !== perm)
+                              : [...editRoleModal.perms, perm];
+                            setEditRoleModal(m => ({ ...m, perms: next }));
+                          }}
+                          className="accent-slate-800"
+                        />
+                        <span className="text-gray-600">{PERM_LABELS[perm] || perm}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => setEditRoleModal(null)}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded text-sm font-medium transition-colors">Cancel</button>
+              <button onClick={() => saveRolePermissions(editRoleModal.role, editRoleModal.perms)}
+                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-2 rounded text-sm font-medium transition-colors">
+                Save Permissions
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Roles Tab ── */}
+      {activeTab === 'roles' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {Object.entries(rolePermissions).map(([roleName, perms]) => (
+            <div key={roleName} className="bg-white border border-gray-200 rounded-xl p-5">
+              <div className="flex items-start justify-between mb-1">
+                <h3 className="font-bold text-slate-800 text-base capitalize">{roleName}</h3>
+                <button
+                  onClick={() => setEditRoleModal({ role: roleName, perms: [...perms] })}
+                  className="text-xs text-gray-500 hover:text-slate-700 border border-gray-200 hover:border-gray-400 px-2.5 py-1 rounded transition-colors"
+                >
+                  Edit
+                </button>
+              </div>
+              <p className="text-xs text-gray-400 mb-3">{ROLE_DESCRIPTIONS[roleName] ?? ''}</p>
+              {perms.length === 0 ? (
+                <p className="text-xs text-gray-300 italic">No default permissions</p>
+              ) : (
+                <div className="flex flex-wrap gap-1.5">
+                  {perms.map(p => (
+                    <span key={p} className="bg-blue-50 text-blue-700 border border-blue-100 text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide">
+                      {PERM_LABELS[p] || p}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* ── Search & Filters ── */}
-      {(() => {
+      {activeTab === 'users' && (() => {
         const filtered = users.filter(u => {
           const matchSearch = !search || u.name.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase());
           const matchRole   = !roleFilter   || u.role === roleFilter;

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { reportsApi } from '../../api/reportsApi';
 import { rehearsalsApi } from '../../api/rehearsalsApi';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import SearchFilters from '../../components/common/SearchFilters';
 import DataTable from '../../components/common/DataTable';
 import { BarChart2, Table2, Maximize2, Minimize2, Filter } from 'lucide-react';
@@ -82,10 +82,10 @@ const ReportsPage = () => {
         </div>
       </div>
 
+
       {/* ── Rehearsal Filter ── */}
       <div className="flex items-center gap-3 mb-5">
         <div className="flex items-center gap-2 text-sm text-gray-500">
-          <Filter size={14} />
           <span className="font-medium">Filter by rehearsal</span>
         </div>
         <select
@@ -127,17 +127,24 @@ const ReportsPage = () => {
             <EmptyState type="reports" message="No attendance data for this rehearsal." />
           ) : (
             <ResponsiveContainer width="100%" height={360}>
-              <BarChart data={chartData} barCategoryGap="30%">
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="present"    fill="#22c55e" radius={[4,4,0,0]} />
-                <Bar dataKey="absent"     fill="#ef4444" radius={[4,4,0,0]} />
-                <Bar dataKey="late"       fill="#f59e0b" radius={[4,4,0,0]} />
-                <Bar dataKey="excused"    fill="#6366f1" radius={[4,4,0,0]} />
-                <Bar dataKey="not_marked" fill="#d1d5db" radius={[4,4,0,0]} name="not marked" />
-              </BarChart>
+              <LineChart data={chartData} margin={{ top: 5, right: 20, left: -10, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="gradPresent" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor="#22c55e" stopOpacity={0.15}/>
+                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #e2e8f0', fontSize: 12 }} />
+                <Legend iconType="circle" iconSize={8} formatter={v => <span className="text-xs text-gray-600 capitalize">{v}</span>} />
+                <Line type="monotone" dataKey="present"    name="present"    stroke="#22c55e" strokeWidth={2.5} dot={{ r: 4, fill: '#22c55e' }} activeDot={{ r: 6 }} />
+                <Line type="monotone" dataKey="absent"     name="absent"     stroke="#ef4444" strokeWidth={2.5} dot={{ r: 4, fill: '#ef4444' }} activeDot={{ r: 6 }} />
+                <Line type="monotone" dataKey="late"       name="late"       stroke="#f59e0b" strokeWidth={2}   dot={{ r: 3, fill: '#f59e0b' }} activeDot={{ r: 5 }} />
+                <Line type="monotone" dataKey="excused"    name="excused"    stroke="#6366f1" strokeWidth={2}   dot={{ r: 3, fill: '#6366f1' }} activeDot={{ r: 5 }} />
+                <Line type="monotone" dataKey="not_marked" name="not marked" stroke="#d1d5db" strokeWidth={1.5} dot={{ r: 3, fill: '#d1d5db' }} activeDot={{ r: 4 }} strokeDasharray="4 3" />
+              </LineChart>
             </ResponsiveContainer>
           )}
 

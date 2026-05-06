@@ -123,22 +123,31 @@ const DashboardPage = () => {
   const visibleStats = isStaff ? statCards : statCards.slice(0, 2);
 
   // ── Chart data ─────────────────────────────────────────────
-  const rehearsalsByMonth = useMemo(() => {
-    const counts = {};
+  const activityByMonth = useMemo(() => {
+    const rCounts = {};
     (rehearsals ?? []).forEach(r => {
       if (!r.date) return;
       const d = new Date(r.date);
       const key = `${d.getFullYear()}-${String(d.getMonth()).padStart(2,'0')}`;
-      counts[key] = (counts[key] || 0) + 1;
+      rCounts[key] = (rCounts[key] || 0) + 1;
     });
-    return Object.entries(counts)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .slice(-8)
-      .map(([key, count]) => {
-        const [year, mon] = key.split('-');
-        return { month: MONTH_NAMES[parseInt(mon)], count };
-      });
-  }, [rehearsals]);
+    const pCounts = {};
+    (productions ?? []).forEach(p => {
+      if (!p.createdAt && !p.created_at) return;
+      const d = new Date(p.createdAt || p.created_at);
+      const key = `${d.getFullYear()}-${String(d.getMonth()).padStart(2,'0')}`;
+      pCounts[key] = (pCounts[key] || 0) + 1;
+    });
+    const allKeys = Array.from(new Set([...Object.keys(rCounts), ...Object.keys(pCounts)])).sort();
+    return allKeys.slice(-10).map(key => {
+      const [, mon] = key.split('-');
+      return { month: MONTH_NAMES[parseInt(mon)], rehearsals: rCounts[key] || 0, productions: pCounts[key] || 0 };
+    });
+  }, [rehearsals, productions]);
+
+  const rehearsalsByMonth = useMemo(() => {
+    return activityByMonth.map(d => ({ month: d.month, count: d.rehearsals }));
+  }, [activityByMonth]);
 
   const rehearsalTypes = useMemo(() => {
     const counts = {};
@@ -223,26 +232,40 @@ const DashboardPage = () => {
       {tab === 'Overview' && (
         <div className="space-y-6">
 
-          {/* Rehearsals activity area chart */}
+          {/* Activity area chart — rehearsals + productions */}
           <div className="bg-white border border-gray-100 rounded-2xl p-6">
-            <h2 className="text-sm font-bold text-slate-800 mb-1">Rehearsal Activity</h2>
-            <p className="text-xs text-gray-400 mb-5">Number of rehearsals per month</p>
-            {rehearsalsByMonth.length === 0 ? (
-              <EmptyState type="rehearsals" message="No rehearsal data yet." />
+            <h2 className="text-sm font-bold text-slate-800 mb-1">Activity Overview</h2>
+            <p className="text-xs text-gray-400 mb-5">Rehearsals &amp; productions per month</p>
+            {activityByMonth.length === 0 ? (
+              <EmptyState type="rehearsals" message="No activity data yet." />
             ) : (
-              <ResponsiveContainer width="100%" height={220}>
-                <AreaChart data={rehearsalsByMonth} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+              <ResponsiveContainer width="100%" height={260}>
+                <AreaChart data={activityByMonth} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
                   <defs>
-                    <linearGradient id="gradReh" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor="#f97316" stopOpacity={0.25}/>
-                      <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
+                    <linearGradient id="gradReh2" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%"   stopColor="#6366f1" stopOpacity={0.18}/>
+                      <stop offset="100%" stopColor="#6366f1" stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="gradProd2" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%"   stopColor="#ef4444" stopOpacity={0.18}/>
+                      <stop offset="100%" stopColor="#ef4444" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="4 4" stroke="#e2e8f0" vertical={false} />
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
                   <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Area type="monotone" dataKey="count" name="Rehearsals" stroke="#f97316" strokeWidth={2.5} fill="url(#gradReh)" dot={{ fill: '#f97316', r: 4 }} activeDot={{ r: 6 }} />
+                  <Legend
+                    layout="horizontal"
+                    verticalAlign="top"
+                    align="right"
+                    iconType="circle"
+                    iconSize={9}
+                    wrapperStyle={{ paddingBottom: 16 }}
+                    formatter={v => <span style={{ fontSize: 12, color: '#64748b' }}>{v}</span>}
+                  />
+                  <Area type="monotone" dataKey="rehearsals"  name="Rehearsals"  stroke="#6366f1" strokeWidth={2.5} fill="url(#gradReh2)"  dot={{ r: 4, fill: '#6366f1', strokeWidth: 0 }}  activeDot={{ r: 6 }} />
+                  <Area type="monotone" dataKey="productions" name="Productions" stroke="#ef4444" strokeWidth={2.5} fill="url(#gradProd2)" dot={{ r: 4, fill: '#ef4444', strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </AreaChart>
               </ResponsiveContainer>
             )}
