@@ -87,7 +87,7 @@ const ProfilePage = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-black text-slate-800 mb-1">My Profile</h1>
+      <h1 className="text-2xl font-normal text-slate-800 mb-1">My Profile</h1>
       <p className="text-sm text-gray-400 mb-8">View and update your profile information</p>
 
       <div className="bg-white border border-gray-200 rounded-sm p-8 max-w-lg">

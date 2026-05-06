@@ -910,7 +910,7 @@ const ProductionDetailPage = () => {
           <Clapperboard size={16} className="text-slate-500 shrink-0" />
           <span className={`text-xs font-semibold px-2 py-0.5 rounded-full capitalize ${badgeCls}`}>{production.status}</span>
         </div>
-        <h1 className="text-2xl font-black text-slate-800 leading-tight mb-2">{production.title}</h1>
+        <h1 className="text-2xl font-normal text-slate-800 leading-tight mb-2">{production.title}</h1>
         {production.description && <p className="text-sm text-gray-500 mb-4">{production.description}</p>}
         <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-gray-500">
           {production.director   && <span><span className="font-medium text-gray-700">Director:</span> {production.director.name}</span>}

@@ -45,7 +45,7 @@ const MembersListPage = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-black text-slate-800 mb-1">Members</h1>
+      <h1 className="text-2xl font-normal text-slate-800 mb-1">Members</h1>
       <p className="text-sm text-gray-400 mb-6">All registered members of ISHYA Culture Troup</p>
 
       <SearchFilters

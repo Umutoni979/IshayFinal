@@ -18,7 +18,7 @@ const MemberDetailPage = () => {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">{user?.name}</h1>
+      <h1 className="text-2xl font-normal text-slate-800 mb-6">{user?.name}</h1>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-4 space-y-3">
         <p><span className="font-medium text-gray-600">Email:</span> {user?.email}</p>

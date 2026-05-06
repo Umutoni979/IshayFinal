@@ -27,7 +27,7 @@ const NotificationsPage = () => {
   return (
     <div className="max-w-2xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+        <h1 className="text-2xl font-normal text-slate-800 flex items-center gap-2">
           Notifications
         </h1>
         <button

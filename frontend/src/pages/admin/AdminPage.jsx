@@ -176,7 +176,7 @@ const AdminPage = () => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-800">Admin</h1>
+          <h1 className="text-2xl font-normal text-slate-800">Admin</h1>
           <p className="text-sm text-gray-400">User management and system settings</p>
         </div>
         <div className="flex items-center gap-3">

@@ -24,7 +24,7 @@ const MyRolesPage = () => {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2 mb-1">
+      <h1 className="text-2xl font-normal text-slate-800 flex items-center gap-2 mb-1">
         My Roles
       </h1>
       <p className="text-sm text-gray-400 mb-6">Parts you have been assigned to in productions</p>

@@ -186,7 +186,7 @@ const RolesPage = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <h1 className="text-2xl font-black text-slate-800">Role Assignments</h1>
+        <h1 className="text-2xl font-normal text-slate-800">Role Assignments</h1>
         {canWrite && (
           <button onClick={() => setShowCreate(true)}
             className="flex items-center gap-1.5 bg-slate-500 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors">
