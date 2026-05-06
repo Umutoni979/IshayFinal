@@ -19,7 +19,7 @@ const Breadcrumb = () => {
 
   return (
     <nav className="flex items-center gap-1 text-sm mb-6 text-gray-500">
-      <span className="text-gray-400">ISHYA</span>
+      <span className="text-gray-400">Ishya</span>
       {segments.map((seg, i) => {
         const path  = '/' + segments.slice(0, i + 1).join('/');
         const label = LABELS[seg] || seg;

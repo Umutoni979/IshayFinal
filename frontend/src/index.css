@@ -5,11 +5,16 @@
 @layer base {
   *, *::before, *::after {
     box-sizing: border-box;
+    font-family: 'Lato', system-ui, sans-serif;
   }
 
   body {
     font-family: 'Lato', system-ui, sans-serif;
     color: #1e293b;
+  }
+
+  input, textarea, select, button {
+    font-family: 'Lato', system-ui, sans-serif;
   }
 }
 

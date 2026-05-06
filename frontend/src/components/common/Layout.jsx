@@ -18,8 +18,15 @@ const Layout = () => {
   const [profileOpen, setProfileOpen]   = useState(false);
   const [bellOpen, setBellOpen]         = useState(false);
   const [sidebarOpen, setSidebarOpen]   = useState(true);
+  const [scrolled, setScrolled]         = useState(false);
   const dropdownRef = useRef(null);
   const bellRef     = useRef(null);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 4);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const { data: notifications = [] } = useQuery({
     queryKey: ['notifications'],
@@ -58,7 +65,7 @@ const Layout = () => {
     <div className="min-h-screen bg-white font-[Lato,sans-serif]">
 
       {/* ── Header ── */}
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-200 h-16 px-6 flex items-center gap-4" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.07)' }}>
+      <header className={`sticky top-0 z-50 bg-white h-16 px-6 flex items-center gap-4 transition-shadow duration-200 ${scrolled ? 'shadow-md' : ''}`}>
 
         {/* Left: burger + logo */}
         <div className="flex items-center gap-2 shrink-0">
