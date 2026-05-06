@@ -150,7 +150,8 @@ const GlobalSearch = ({ user }) => {
   return (
     <div ref={containerRef} className="flex-1 flex justify-center px-4 max-w-2xl mx-auto w-full relative">
       {/* Input */}
-      <div className="flex w-full max-w-xl relative">
+      <div className="flex items-center w-full max-w-xl relative bg-gray-100 rounded-full px-5 py-2.5 gap-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-gray-300 transition-all">
+        <Search size={16} className="text-gray-400 shrink-0" />
         <input
           ref={inputRef}
           type="text"
@@ -158,24 +159,17 @@ const GlobalSearch = ({ user }) => {
           onChange={e => setQuery(e.target.value)}
           onFocus={() => setOpen(true)}
           placeholder="Search productions, rehearsals, members…"
-          className="flex-1 border border-gray-300 rounded-l-full px-5 py-2 text-sm focus:outline-none focus:border-slate-400 bg-white"
+          className="flex-1 text-sm text-gray-800 bg-transparent outline-none placeholder-gray-400"
         />
         {query && (
           <button
             type="button"
             onClick={() => { setQuery(''); setResults({}); inputRef.current?.focus(); }}
-            className="absolute right-[52px] top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600"
+            className="p-0.5 text-gray-400 hover:text-gray-600 shrink-0"
           >
             <X size={14} />
           </button>
         )}
-        <button
-          type="button"
-          onClick={() => inputRef.current?.focus()}
-          className="px-5 bg-gray-100 border border-l-0 border-gray-300 rounded-r-full hover:bg-gray-200 transition-colors"
-        >
-          <Search size={16} className="text-gray-600" />
-        </button>
       </div>
 
       {/* Dropdown */}

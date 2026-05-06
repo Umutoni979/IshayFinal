@@ -10,7 +10,6 @@ const Sidebar = ({ open = true }) => {
 
   const navItems = [
     { to: '/dashboard',      label: 'Dashboard' },
-    { to: '/members',        label: 'Members',        action: 'users:read' },
     { to: '/productions',    label: 'Productions' },
     { to: '/roles',          label: 'Roles',          action: 'roles:write' },
     { to: '/rehearsals',     label: 'Rehearsals' },

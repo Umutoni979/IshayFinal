@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, ChevronDown, Check } from 'lucide-react';
 
 const FilterDropdown = ({ label, value, options, onChange }) => {
   const [open, setOpen] = useState(false);
@@ -17,53 +17,39 @@ const FilterDropdown = ({ label, value, options, onChange }) => {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(v => !v)}
-        className={`flex items-center gap-1.5 border rounded-sm pl-3 pr-2.5 py-1.5 text-sm font-medium transition-colors ${
-          value
-            ? 'bg-slate-700 text-white border-slate-700'
-            : 'bg-white text-slate-700 border-gray-200 hover:border-gray-300'
-        }`}
+        className="flex items-center gap-2 border border-gray-300 rounded px-3 py-2 text-sm text-gray-700 bg-white hover:border-gray-400 transition-colors min-w-[120px] justify-between"
       >
-        {value ? `${label}: ${activeLabel}` : label}
-        {open ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+        <span>{value ? `${label}: ${activeLabel}` : `All ${label}s`}</span>
+        <ChevronDown size={14} className={`shrink-0 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full mt-1 w-52 bg-white border border-gray-200 rounded-sm shadow-lg z-50 overflow-hidden">
-          <ul className="py-1">
-            {options.map(o => {
-              const val   = o.value ?? o;
-              const lbl   = o.label ?? o;
-              const active = value === val;
-              return (
-                <li
-                  key={val}
-                  onClick={() => { onChange(active ? '' : val); setOpen(false); }}
-                  className={`flex items-center gap-3 px-4 py-2.5 text-sm cursor-pointer transition-colors ${
-                    active ? 'bg-slate-50 text-slate-800' : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <span className={`w-4 h-4 border rounded flex items-center justify-center shrink-0 ${active ? 'bg-slate-700 border-slate-700' : 'border-gray-300'}`}>
-                    {active && (
-                      <svg viewBox="0 0 10 8" className="w-2.5 h-2.5 text-white fill-current">
-                        <path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    )}
-                  </span>
-                  {lbl}
-                </li>
-              );
-            })}
-          </ul>
+        <div className="absolute left-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded shadow-md z-50 overflow-hidden py-1">
           {value && (
-            <div className="border-t border-gray-100 px-4 py-2">
-              <button
-                onClick={() => { onChange(''); setOpen(false); }}
-                className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                Clear selection
-              </button>
-            </div>
+            <button
+              onClick={() => { onChange(''); setOpen(false); }}
+              className="w-full text-left px-4 py-2 text-xs text-gray-400 hover:bg-gray-50 transition-colors"
+            >
+              Clear
+            </button>
           )}
+          {options.map(o => {
+            const val    = o.value ?? o;
+            const lbl    = o.label ?? o;
+            const active = value === val;
+            return (
+              <button
+                key={val}
+                onClick={() => { onChange(active ? '' : val); setOpen(false); }}
+                className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors ${
+                  active ? 'text-orange-600 bg-orange-50' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                {lbl}
+                {active && <Check size={13} className="text-orange-500" />}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
@@ -71,24 +57,23 @@ const FilterDropdown = ({ label, value, options, onChange }) => {
 };
 
 const SearchFilters = ({ search, onSearch, placeholder = 'Search…', filters = [], resultCount }) => (
-  <div className="mb-6">
-    <div className="flex items-center gap-3 border border-gray-300 rounded-sm px-4 py-2.5 bg-white focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-100 transition mb-3 w-1/2">
-      <Search size={16} className="text-gray-400 shrink-0" />
-      <input
-        type="text"
-        value={search}
-        onChange={e => onSearch(e.target.value)}
-        placeholder={placeholder}
-        className="flex-1 text-sm text-slate-800 bg-transparent outline-none placeholder-gray-400"
-      />
-    </div>
-
-    <div className="flex items-center justify-between flex-wrap gap-2">
-      <div className="flex items-center gap-2 flex-wrap">
-        {filters.map(f => <FilterDropdown key={f.label} {...f} />)}
+  <div className="mb-5">
+    <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex items-center gap-2 border border-gray-300 rounded px-3 py-2 bg-white focus-within:border-gray-400 transition flex-1 min-w-[200px] max-w-sm">
+        <Search size={14} className="text-gray-400 shrink-0" />
+        <input
+          type="text"
+          value={search}
+          onChange={e => onSearch(e.target.value)}
+          placeholder={placeholder}
+          className="flex-1 text-sm text-gray-800 bg-transparent outline-none placeholder-gray-400"
+        />
       </div>
+
+      {filters.map(f => <FilterDropdown key={f.label} {...f} />)}
+
       {resultCount !== undefined && (
-        <span className="text-xs text-gray-400">
+        <span className="text-xs text-gray-400 ml-auto">
           {resultCount === 0 ? 'No results' : `${resultCount} result${resultCount !== 1 ? 's' : ''}`}
         </span>
       )}

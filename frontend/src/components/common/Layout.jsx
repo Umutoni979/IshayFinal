@@ -57,39 +57,44 @@ const Layout = () => {
   return (
     <div className="min-h-screen bg-white font-[Lato,sans-serif]">
 
-      {/* ── YouTube-style header ── */}
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-200 h-14 px-4 flex items-center gap-4">
+      {/* ── Header ── */}
+      <header className="sticky top-0 z-50 bg-white border-b border-gray-200 h-16 px-6 flex items-center gap-4" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.07)' }}>
 
         {/* Left: burger + logo */}
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => setSidebarOpen(o => !o)}
             className="p-2 rounded-full hover:bg-gray-100 transition-colors"
             aria-label="Toggle sidebar"
           >
-            <Menu size={20} className="text-gray-600" />
+            <Menu size={20} className="text-gray-500" />
           </button>
-          <span className="text-[18px] font-black tracking-tight hidden sm:block">
-            <span className="text-gray-600">Ishyaculture</span><span className="text-slate-400">troup</span>
-          </span>
+          <div className="hidden sm:flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-orange-500 flex items-center justify-center shrink-0">
+              <span className="text-white text-xs font-black">I</span>
+            </div>
+            <span className="text-[15px] font-semibold text-gray-800 tracking-tight">
+              Ishyaculturetroup
+            </span>
+          </div>
         </div>
 
         {/* Center: global search */}
         <GlobalSearch user={user} />
 
         {/* Right: bell + avatar */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1 shrink-0">
 
           {/* Notification bell + dropdown */}
           <div className="relative" ref={bellRef}>
             <button
               onClick={() => { setBellOpen(v => !v); setProfileOpen(false); }}
-              className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
+              className="relative p-2.5 rounded-full hover:bg-gray-100 transition-colors"
               aria-label="Notifications"
             >
               <Bell size={20} className="text-gray-600" />
               {unreadCount > 0 && (
-                <span className="absolute top-1 right-1 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 leading-none">
+                <span className="absolute top-1.5 right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 leading-none">
                   {unreadCount > 99 ? '99+' : unreadCount}
                 </span>
               )}
@@ -202,17 +207,16 @@ const Layout = () => {
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => { setProfileOpen(v => !v); setBellOpen(false); }}
-              className="flex items-center gap-2 hover:opacity-80 transition-opacity pl-1"
+              className="flex items-center hover:opacity-80 transition-opacity p-1"
+              title={user?.name}
             >
-              <div className="w-8 h-8 rounded-full bg-orange-100 overflow-hidden flex items-center justify-center border border-gray-200 shrink-0">
+              <div className="w-9 h-9 rounded-full bg-orange-500 overflow-hidden flex items-center justify-center border-2 border-transparent hover:border-orange-300 transition-all shrink-0">
                 {user?.profile_image ? (
                   <img src={`${API_BASE}${user.profile_image}`} alt="avatar" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-sm font-bold text-orange-500">{user?.name?.charAt(0).toUpperCase()}</span>
+                  <span className="text-sm font-bold text-white">{user?.name?.charAt(0).toUpperCase()}</span>
                 )}
               </div>
-              <p className="text-sm font-semibold text-slate-800 hidden sm:block">{user?.name}</p>
-              <ChevronDown size={14} className={`text-gray-400 transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {profileOpen && (
