@@ -26,27 +26,29 @@ const Sidebar = ({ open = true }) => {
   if (!open) return null;
 
   return (
-    <aside className="w-56 shrink-0 min-h-[calc(100vh-56px)] bg-white border-r border-gray-200 py-4 flex flex-col">
-      <nav className="flex-1 px-3 space-y-0.5">
-        {navItems.map(({ to, label, action }) => {
-          if (action && !canDo(user?.role, action)) return null;
-          return (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                `flex items-center px-3 py-2 rounded-md text-[13.5px] font-semibold transition-colors ${
-                  isActive
-                    ? 'bg-gray-100 text-gray-900'
-                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
-                }`
-              }
-            >
-              {label}
-            </NavLink>
-          );
-        })}
-      </nav>
+    <aside className="w-56 shrink-0">
+      <div className="fixed top-[58px] left-2 bottom-2 w-52 bg-white border border-gray-200 rounded-2xl py-4 flex flex-col shadow-sm overflow-y-auto z-40">
+        <nav className="flex-1 px-3 space-y-0.5">
+          {navItems.map(({ to, label, action }) => {
+            if (action && !canDo(user?.role, action)) return null;
+            return (
+              <NavLink
+                key={to}
+                to={to}
+                className={({ isActive }) =>
+                  `flex items-center px-3 py-2 rounded-full text-[13.5px] font-semibold transition-colors ${
+                    isActive
+                      ? 'bg-gray-100 text-gray-900'
+                      : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                  }`
+                }
+              >
+                {label}
+              </NavLink>
+            );
+          })}
+        </nav>
+      </div>
     </aside>
   );
 };

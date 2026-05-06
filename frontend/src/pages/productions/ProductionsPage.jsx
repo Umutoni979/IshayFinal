@@ -5,60 +5,30 @@ import { productionsApi } from '../../api/productionsApi';
 import { formatDate } from '../../utils/formatDate';
 import usePermission from '../../hooks/usePermission';
 import toast from 'react-hot-toast';
-import { Clapperboard, X } from 'lucide-react';
+import { X, LayoutGrid, List, Search, ChevronRight } from 'lucide-react';
 import { CardsSkeleton } from '../../components/common/Skeleton';
 import EmptyState from '../../components/common/EmptyState';
 
 const statusConfig = {
-  planning:  { label: 'Planning',  badge: 'text-orange-600', icon: 'bg-orange-500', accent: '#f97316' },
-  active:    { label: 'Active',    badge: 'text-green-600',  icon: 'bg-green-500',  accent: '#22c55e' },
-  completed: { label: 'Completed', badge: 'text-blue-600',   icon: 'bg-blue-500',   accent: '#3b82f6' },
-  cancelled: { label: 'Cancelled', badge: 'text-red-500',    icon: 'bg-red-400',    accent: '#f87171' },
+  planning:  { label: 'Planning',  color: '#f97316' },
+  active:    { label: 'Active',    color: '#22c55e' },
+  completed: { label: 'Completed', color: '#3b82f6' },
+  cancelled: { label: 'Cancelled', color: '#f87171' },
 };
 
-// Wavy topographic lines — like card 1 in reference
-const DecoWave = ({ color }) => (
-  <svg viewBox="0 0 160 200" className="absolute right-0 top-0 h-full w-1/2" preserveAspectRatio="xMaxYMid slice" aria-hidden>
-    <path d="M160 20 C120 40 80 60 100 100 C120 140 60 160 80 200" stroke={color} strokeWidth="16" fill="none" strokeLinecap="round" opacity="0.18"/>
-    <path d="M160 40 C125 58 85 75 108 115 C130 155 68 172 90 200" stroke={color} strokeWidth="12" fill="none" strokeLinecap="round" opacity="0.22"/>
-    <path d="M160 60 C130 76 92 90 115 128 C138 166 76 180 100 200" stroke={color} strokeWidth="9"  fill="none" strokeLinecap="round" opacity="0.26"/>
-    <path d="M160 80 C135 95 100 106 122 142 C144 178 84 188 110 200" stroke={color} strokeWidth="6" fill="none" strokeLinecap="round" opacity="0.3"/>
-    <path d="M160 100 C140 112 108 122 130 156 C150 188 92 196 118 200" stroke={color} strokeWidth="4" fill="none" strokeLinecap="round" opacity="0.35"/>
+const FolderIcon = ({ color = '#f59e0b', size = 56 }) => (
+  <svg width={size} height={size} viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M6 16C6 13.8 7.8 12 10 12H22L26 17H46C48.2 17 50 18.8 50 21V42C50 44.2 48.2 46 46 46H10C7.8 46 6 44.2 6 42V16Z"
+      fill={color}
+      opacity="0.85"
+    />
+    <path
+      d="M6 22C6 19.8 7.8 18 10 18H46C48.2 18 50 19.8 50 22V42C50 44.2 48.2 46 46 46H10C7.8 46 6 44.2 6 42V22Z"
+      fill={color}
+    />
   </svg>
 );
-
-// Dot/particle wave — like card 2 in reference
-const DecoDots = ({ color }) => (
-  <svg viewBox="0 0 160 200" className="absolute right-0 top-0 h-full w-1/2" preserveAspectRatio="xMaxYMid slice" aria-hidden>
-    {[...Array(40)].map((_, i) => {
-      const t   = i / 39;
-      const cx  = 80 + Math.sin(t * Math.PI * 2.5) * 50;
-      const cy  = t * 200;
-      const r   = 2.5 + Math.sin(t * Math.PI) * 2;
-      return <circle key={i} cx={cx} cy={cy} r={r} fill={color} opacity={0.15 + t * 0.3} />;
-    })}
-  </svg>
-);
-
-// Stacked chevrons — like card 3 in reference
-const DecoChevrons = ({ color }) => (
-  <svg viewBox="0 0 140 120" className="absolute bottom-0 right-0 w-36 h-28" aria-hidden>
-    {[0,1,2,3,4].map(i => (
-      <polyline key={i}
-        points={`${30 - i*10},${110 - i*18} ${90},${50 - i*18} ${140},${110 - i*18}`}
-        fill="none" stroke={color} strokeWidth="12" strokeLinecap="square"
-        opacity={0.10 + i * 0.07}
-      />
-    ))}
-  </svg>
-);
-
-const decoMap = {
-  planning:  (c) => <DecoWave color={c} />,
-  active:    (c) => <DecoDots color={c} />,
-  completed: (c) => <DecoChevrons color={c} />,
-  cancelled: (c) => <DecoWave color={c} />,
-};
 
 const EMPTY_FORM = { title: '', description: '', venue: '', start_date: '', end_date: '', status: 'planning' };
 
@@ -67,6 +37,8 @@ const ProductionsPage = () => {
   const queryClient = useQueryClient();
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [view, setView] = useState('grid');
+  const [search, setSearch] = useState('');
 
   const { data, isLoading } = useQuery({
     queryKey: ['productions'],
@@ -86,28 +58,60 @@ const ProductionsPage = () => {
 
   const set = (field) => (e) => setForm(f => ({ ...f, [field]: e.target.value }));
 
+  const filtered = (data || []).filter(p =>
+    p.title?.toLowerCase().includes(search.toLowerCase())
+  );
+
   if (isLoading) return <CardsSkeleton />;
 
   return (
     <div>
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-800 flex items-center gap-2">
-            Productions
-          </h1>
+          <h1 className="text-2xl font-normal text-slate-800">Productions</h1>
           <p className="text-sm text-gray-400 mt-0.5">Manage all troup productions</p>
         </div>
         {canWrite && (
           <button
             onClick={() => setShowCreate(true)}
-            className="bg-slate-500 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
+            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-1.5 rounded text-sm font-medium transition-colors"
           >
             + Production
           </button>
         )}
       </div>
 
-      {/* ── Create Modal ── */}
+      {/* Toolbar: search + view toggle */}
+      <div className="flex items-center justify-between mb-5 gap-3">
+        <div className="relative flex-1 max-w-xs">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search productions…"
+            className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white"
+          />
+        </div>
+        <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+          <button
+            onClick={() => setView('grid')}
+            className={`p-2 transition-colors ${view === 'grid' ? 'bg-orange-500 text-white' : 'bg-white text-gray-400 hover:bg-gray-50'}`}
+            title="Grid view"
+          >
+            <LayoutGrid size={16} />
+          </button>
+          <button
+            onClick={() => setView('list')}
+            className={`p-2 transition-colors ${view === 'list' ? 'bg-orange-500 text-white' : 'bg-white text-gray-400 hover:bg-gray-50'}`}
+            title="List view"
+          >
+            <List size={16} />
+          </button>
+        </div>
+      </div>
+
+      {/* Create Modal */}
       {showCreate && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6">
@@ -119,34 +123,34 @@ const ProductionsPage = () => {
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Title *</label>
                 <input required value={form.title} onChange={set('title')} placeholder="e.g. Romeo and Juliet 2025"
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400" />
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
                 <textarea value={form.description} onChange={set('description')} rows={3} placeholder="Short description of the production…"
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 resize-none" />
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Venue</label>
                 <input value={form.venue} onChange={set('venue')} placeholder="e.g. Main Hall, Auditorium…"
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400" />
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-gray-600 mb-1">Start Date</label>
                   <input type="date" value={form.start_date} onChange={set('start_date')}
-                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400" />
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-600 mb-1">End Date</label>
                   <input type="date" value={form.end_date} onChange={set('end_date')}
-                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400" />
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Status</label>
                 <select value={form.status} onChange={set('status')}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400">
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
                   <option value="planning">Planning</option>
                   <option value="active">Active</option>
                   <option value="completed">Completed</option>
@@ -159,7 +163,7 @@ const ProductionsPage = () => {
                   Cancel
                 </button>
                 <button type="submit" disabled={createMutation.isPending}
-                  className="flex-1 bg-slate-500 hover:bg-slate-600 text-white py-2 rounded text-sm font-medium disabled:opacity-60 transition-colors">
+                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-2 rounded text-sm font-medium disabled:opacity-60 transition-colors">
                   {createMutation.isPending ? 'Creating…' : 'Create Production'}
                 </button>
               </div>
@@ -168,41 +172,60 @@ const ProductionsPage = () => {
         </div>
       )}
 
-      {/* ── Productions grid ── */}
-      {!data || data.length === 0 ? (
-        <div>
-          <EmptyState type="productions" message="No productions yet" sub={canWrite ? 'Click + Production to create the first one.' : undefined} />
-        </div>
-      ) : (
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {data.map(p => {
-            const cfg  = statusConfig[p.status] ?? statusConfig.planning;
-            const deco = decoMap[p.status] ?? decoMap.planning;
+      {/* Empty state */}
+      {filtered.length === 0 && (
+        <EmptyState type="productions" message="No productions found" sub={canWrite && !search ? 'Click + Production to create the first one.' : undefined} />
+      )}
+
+      {/* Grid view */}
+      {filtered.length > 0 && view === 'grid' && (
+        <div className="grid gap-5 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          {filtered.map(p => {
+            const cfg = statusConfig[p.status] ?? statusConfig.planning;
             return (
               <Link
                 key={p.id}
                 to={`/productions/${p.id}`}
-                className="relative overflow-hidden bg-white border border-gray-200 rounded-2xl flex flex-col justify-between min-h-[240px] hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
+                className="flex flex-col items-center p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 group"
               >
-                {/* Decorative graphic — fills right portion, behind content */}
-                {deco(cfg.accent)}
+                <FolderIcon color={cfg.color} size={56} />
+                <p className="mt-3 text-sm font-semibold text-slate-800 text-center leading-tight line-clamp-2 group-hover:text-orange-500 transition-colors">
+                  {p.title}
+                </p>
+                <p className="mt-1 text-xs text-gray-400">
+                  {cfg.label}
+                </p>
+                {p.start_date && (
+                  <p className="text-[11px] text-gray-300 mt-0.5">{formatDate(p.start_date)}</p>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+      )}
 
-                {/* Top row: icon + date */}
-                <div className="relative z-10 flex items-start justify-between p-5 pb-0">
-                  <div className={`w-11 h-11 rounded-xl ${cfg.icon} flex items-center justify-center shadow-sm`}>
-                    <Clapperboard size={19} className="text-white" />
-                  </div>
-                  <span className="text-xs text-gray-400 font-medium pt-1">
-                    {p.start_date ? formatDate(p.start_date) : 'TBD'}
-                  </span>
+      {/* List view */}
+      {filtered.length > 0 && view === 'list' && (
+        <div className="bg-white border border-gray-100 rounded-xl overflow-hidden divide-y divide-gray-50">
+          {filtered.map(p => {
+            const cfg = statusConfig[p.status] ?? statusConfig.planning;
+            return (
+              <Link
+                key={p.id}
+                to={`/productions/${p.id}`}
+                className="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50 transition-colors group"
+              >
+                <FolderIcon color={cfg.color} size={36} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-800 group-hover:text-orange-500 transition-colors truncate">
+                    {p.title}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    {cfg.label}{p.start_date ? ` · ${formatDate(p.start_date)}` : ''}
+                    {p.director?.name ? ` · ${p.director.name}` : ''}
+                  </p>
                 </div>
-
-                {/* Bottom-left: status + title + director */}
-                <div className="relative z-10 p-5 pt-6">
-                  <p className={`text-xs font-semibold mb-1 ${cfg.badge}`}>{cfg.label}</p>
-                  <h2 className="font-black text-slate-800 text-lg leading-tight mb-5 line-clamp-2">{p.title}</h2>
-                  <p className="text-xs text-gray-400">{p.director?.name ?? '—'}</p>
-                </div>
+                <ChevronRight size={16} className="text-gray-300 shrink-0" />
               </Link>
             );
           })}
