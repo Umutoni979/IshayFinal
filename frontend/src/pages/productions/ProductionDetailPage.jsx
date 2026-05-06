@@ -462,7 +462,7 @@ const TimelineTab = ({ productionId, canManage }) => {
                       const next = { pending: 'in_progress', in_progress: 'completed' };
                       cycleMutation.mutate({ mid: selected.id, status: next[selected.status] });
                     }}
-                    className="w-full bg-slate-500 hover:bg-slate-600 text-white text-sm font-medium px-3 py-1.5 rounded transition-colors mb-2 disabled:opacity-60"
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-3 py-1.5 rounded transition-colors mb-2 disabled:opacity-60"
                   >
                     {cycleMutation.isPending ? 'Updating…' : selected.status === 'pending' ? 'Mark as In Progress' : 'Mark as Complete'}
                   </button>
@@ -479,7 +479,7 @@ const TimelineTab = ({ productionId, canManage }) => {
                   <div style={{ display: 'flex', gap: 8 }}>
                     <button
                       onClick={() => { setForm({ title: selected.title, category: selected.category, due_date: selected.due_date||'', notes: selected.notes||'' }); setEditMode(true); }}
-                      className="flex-1 flex items-center justify-center gap-1.5 bg-slate-500 hover:bg-slate-600 text-white text-xs font-medium px-3 py-1.5 rounded transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-medium px-3 py-1.5 rounded transition-colors"
                     >
                       <Pencil size={12}/> Edit
                     </button>
@@ -661,7 +661,7 @@ const EventsTab = ({ productionId, canManage }) => {
       <div className="flex gap-2">
         <button onClick={onCancel} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded text-xs font-medium">Cancel</button>
         <button disabled={!form.title || !form.event_date || saving} onClick={onSave}
-          className="flex-1 bg-slate-600 hover:bg-slate-700 disabled:opacity-50 text-white py-1.5 rounded text-xs font-medium">
+          className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white py-1.5 rounded text-xs font-medium">
           {saving ? 'Saving…' : 'Save Event'}
         </button>
       </div>
@@ -799,7 +799,7 @@ const ReportTab = ({ productionId, production, canManage }) => {
         <div className="flex gap-2 pt-1">
           {report && <button onClick={() => setEditing(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded text-sm font-medium">Cancel</button>}
           <button disabled={saveMutation.isPending} onClick={() => saveMutation.mutate(form)}
-            className="flex-1 bg-slate-600 hover:bg-slate-700 disabled:opacity-50 text-white py-2 rounded text-sm font-medium flex items-center justify-center gap-2">
+            className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white py-2 rounded text-sm font-medium flex items-center justify-center gap-2">
             <Save size={14} /> {saveMutation.isPending ? 'Saving…' : 'Save Report'}
           </button>
         </div>

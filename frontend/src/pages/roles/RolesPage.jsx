@@ -189,7 +189,7 @@ const RolesPage = () => {
         <h1 className="text-2xl font-normal text-slate-800">Role Assignments</h1>
         {canWrite && (
           <button onClick={() => setShowCreate(true)}
-            className="flex items-center gap-1.5 bg-slate-500 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors">
+            className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors">
             <Plus size={15} /> Add Roles
           </button>
         )}
@@ -257,7 +257,7 @@ const RolesPage = () => {
               <button
                 onClick={() => { if (!productionId) { toast.error('Select a production first'); return; } createMutation.mutate(); }}
                 disabled={createMutation.isPending || rows.every(r => !r.title.trim())}
-                className="flex-1 bg-slate-500 hover:bg-slate-600 text-white py-2 rounded text-sm font-medium disabled:opacity-60 transition-colors">
+                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-2 rounded text-sm font-medium disabled:opacity-60 transition-colors">
                 {createMutation.isPending ? 'Saving…' : 'Save All Roles'}
               </button>
             </div>
@@ -348,7 +348,7 @@ const RolesPage = () => {
               <button
                 onClick={() => updateMutation.mutate(editRole)}
                 disabled={updateMutation.isPending || !editRole.title.trim()}
-                className="flex-1 bg-slate-500 hover:bg-slate-600 text-white py-2 rounded text-sm font-medium disabled:opacity-60 transition-colors">
+                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-2 rounded text-sm font-medium disabled:opacity-60 transition-colors">
                 {updateMutation.isPending ? 'Saving…' : 'Save Changes'}
               </button>
             </div>

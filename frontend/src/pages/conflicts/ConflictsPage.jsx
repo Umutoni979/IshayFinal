@@ -54,7 +54,7 @@ const ConflictsPage = () => {
         <button
           onClick={() => detectMutation.mutate()}
           disabled={detectMutation.isPending}
-          className="flex items-center gap-1.5 bg-slate-500 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors disabled:opacity-60">
+          className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors disabled:opacity-60">
           <ScanSearch size={15} /> {detectMutation.isPending ? 'Scanning…' : 'Scan for Conflicts'}
         </button>
       </div>
@@ -90,7 +90,7 @@ const ConflictsPage = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => resolveMutation.mutate({ id: conflict.id, resolution: 'Manually resolved by coordinator' })}
-                    className="flex items-center gap-1 text-xs bg-slate-500 hover:bg-slate-600 text-white px-3 py-1.5 rounded transition-colors"
+                    className="flex items-center gap-1 text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded transition-colors"
                   >
                     <CheckCircle size={13} /> Resolve
                   </button>

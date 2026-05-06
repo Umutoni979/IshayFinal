@@ -45,14 +45,14 @@ const DataTable = ({ columns, data, pageSize: defaultPageSize = 10 }) => {
   return (
     <div className="bg-white w-full">
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm" style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700 }}>
           <thead>
-            <tr className="border-b border-gray-200">
+            <tr className="border-b-2 border-gray-300">
               {columns.map(col => (
                 <th
                   key={col.key}
                   onClick={() => col.sortable !== false && toggleSort(col.key)}
-                  className={`text-left px-4 py-3 text-sm font-semibold text-gray-800 whitespace-nowrap select-none ${col.sortable !== false ? 'cursor-pointer hover:text-black' : ''}`}
+                  className={`text-left px-4 py-3 text-sm font-bold text-gray-900 whitespace-nowrap select-none ${col.sortable !== false ? 'cursor-pointer hover:text-black' : ''}`}
                 >
                   <span className="inline-flex items-center gap-1">
                     {col.label}
@@ -76,10 +76,10 @@ const DataTable = ({ columns, data, pageSize: defaultPageSize = 10 }) => {
                 </td>
               </tr>
             ) : rows.map((row, i) => (
-              <tr key={row.id ?? i} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
+              <tr key={row.id ?? i} className="border-b border-gray-600 last:border-0 hover:bg-gray-50 transition-colors">
                 {columns.map(col => (
-                  <td key={col.key} className="px-4 py-3 text-gray-700 text-sm">
-                    {col.render ? col.render(row) : row[col.key] ?? <span className="text-gray-300">—</span>}
+                  <td key={col.key} className="px-4 py-2 text-gray-600 text-sm font-bold">
+                    {col.render ? col.render(row) : row[col.key] ?? <span className="text-gray-400">—</span>}
                   </td>
                 ))}
               </tr>

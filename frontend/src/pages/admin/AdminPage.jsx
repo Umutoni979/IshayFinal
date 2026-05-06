@@ -182,7 +182,7 @@ const AdminPage = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowCheckinSettings(true)}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm font-medium transition-colors text-white ${selfCheckinStatus ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-slate-500 hover:bg-slate-600'}`}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm font-medium transition-colors text-white ${selfCheckinStatus ? 'bg-orange-500 hover:bg-orange-600' : 'bg-orange-500 hover:bg-orange-600'}`}
           >
             <ScanLine size={15} />
             Self check-in: {selfCheckinStatus ? 'On' : 'Off'}
@@ -190,7 +190,7 @@ const AdminPage = () => {
           <button
             onClick={() => toggleRegMutation.mutate(!regStatus)}
             disabled={toggleRegMutation.isPending}
-            className="flex items-center gap-2 bg-slate-500 hover:bg-slate-600 disabled:opacity-50 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
+            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
             title={regStatus ? 'Click to disable sign-up' : 'Click to enable sign-up'}
           >
             {regStatus ? <UserPlus size={15} /> : <Lock size={15} />}
@@ -198,7 +198,7 @@ const AdminPage = () => {
           </button>
           <button
             onClick={() => setShowCreate(true)}
-            className="bg-slate-500 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
+            className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
           >
             + User
           </button>
@@ -245,7 +245,7 @@ const AdminPage = () => {
                           openSelfCheckinMutation.mutate(Math.round((base + mins * 60 * 1000 - Date.now()) / 60000));
                         }}
                         disabled={openSelfCheckinMutation.isPending}
-                        className="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 py-2 rounded-lg text-xs font-semibold disabled:opacity-60 transition-colors"
+                        className="flex-1 bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 py-2 rounded-lg text-xs font-semibold disabled:opacity-60 transition-colors"
                       >
                         +{mins < 60 ? `${mins}m` : '1h'}
                       </button>
@@ -269,7 +269,7 @@ const AdminPage = () => {
                         setExtendInput('');
                       }}
                       disabled={!extendInput || openSelfCheckinMutation.isPending}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 rounded-lg text-sm font-semibold disabled:opacity-40 transition-colors"
+                      className="bg-orange-500 hover:bg-orange-600 text-white px-4 rounded-lg text-sm font-semibold disabled:opacity-40 transition-colors"
                     >
                       Add
                     </button>
@@ -303,7 +303,7 @@ const AdminPage = () => {
                       onClick={() => setWindowInput(opt.value)}
                       className={`py-2.5 rounded-lg text-xs font-semibold border transition-colors ${
                         windowInput === opt.value
-                          ? 'bg-indigo-600 text-white border-indigo-600'
+                          ? 'bg-orange-500 text-white border-orange-500'
                           : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-400'
                       }`}
                     >
@@ -314,7 +314,7 @@ const AdminPage = () => {
                 <button
                   onClick={() => openSelfCheckinMutation.mutate(parseInt(windowInput))}
                   disabled={openSelfCheckinMutation.isPending}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-semibold disabled:opacity-60 transition-colors"
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-lg text-sm font-semibold disabled:opacity-60 transition-colors"
                 >
                   {openSelfCheckinMutation.isPending ? 'Opening…' : 'Open Check-in'}
                 </button>
@@ -447,7 +447,7 @@ const AdminPage = () => {
                   Cancel
                 </button>
                 <button type="submit" disabled={createMutation.isPending}
-                  className="flex-1 bg-slate-500 hover:bg-slate-600 text-white py-2 rounded text-sm font-medium disabled:opacity-60 transition-colors">
+                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-2 rounded text-sm font-medium disabled:opacity-60 transition-colors">
                   {createMutation.isPending ? 'Creating…' : 'Create & Send Invite'}
                 </button>
               </div>
@@ -525,7 +525,7 @@ const AdminPage = () => {
               </button>
               <button onClick={() => permMutation.mutate({ id: showPermissions.id, perms: permEdit })}
                 disabled={permMutation.isPending}
-                className="flex-1 bg-slate-500 hover:bg-slate-600 text-white py-2 rounded text-sm font-medium disabled:opacity-60 transition-colors">
+                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-2 rounded text-sm font-medium disabled:opacity-60 transition-colors">
                 {permMutation.isPending ? 'Saving…' : 'Save Permissions'}
               </button>
             </div>
@@ -566,7 +566,7 @@ const AdminPage = () => {
                 <button type="button" onClick={() => setShowEdit(null)}
                   className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded text-sm font-medium transition-colors">Cancel</button>
                 <button type="submit" disabled={editMutation.isPending}
-                  className="flex-1 bg-slate-500 hover:bg-slate-600 text-white py-2 rounded text-sm font-medium disabled:opacity-60 transition-colors">
+                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-2 rounded text-sm font-medium disabled:opacity-60 transition-colors">
                   {editMutation.isPending ? 'Saving…' : 'Save Changes'}
                 </button>
               </div>
@@ -643,7 +643,7 @@ const AdminPage = () => {
                   )},
                   { key: 'permissions', label: 'Permissions', render: u => (
                     <button onClick={() => openPermissions(u)}
-                      className="flex items-center gap-1 text-xs bg-slate-500 hover:bg-slate-600 text-white px-2.5 py-1 rounded transition-colors">
+                      className="flex items-center gap-1 text-xs bg-orange-500 hover:bg-orange-600 text-white px-2.5 py-1 rounded transition-colors">
                       <ShieldCheck size={12} />
                       {u.custom_permissions?.length > 0 ? `${u.custom_permissions.length} extra` : 'Set'}
                     </button>

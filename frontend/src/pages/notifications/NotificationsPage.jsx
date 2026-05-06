@@ -32,7 +32,7 @@ const NotificationsPage = () => {
         </h1>
         <button
           onClick={() => markAllMutation.mutate()}
-          className="flex items-center gap-1.5 bg-slate-500 hover:bg-slate-600 text-white text-sm font-medium px-3 py-1.5 rounded transition-colors"
+          className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-3 py-1.5 rounded transition-colors"
         >
           <CheckCheck size={15} /> Mark all read
         </button>

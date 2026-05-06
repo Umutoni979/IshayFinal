@@ -71,7 +71,7 @@ const RehearsalCheckinCard = ({ rehearsal, record, closesAt, onCheckin, isPendin
           <button
             onClick={onCheckin}
             disabled={isPending}
-            className="shrink-0 bg-green-500 hover:bg-green-600 text-white px-4 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-60 transition-colors"
+            className="shrink-0 bg-orange-500 hover:bg-orange-600 text-white px-4 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-60 transition-colors"
           >
             Check In
           </button>

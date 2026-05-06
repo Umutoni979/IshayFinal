@@ -148,24 +148,22 @@ const AttendancePage = () => {
                   {isPast ? 'Archived record' : 'Click a status to mark'}
                 </span>
               </div>
-              <table className="w-full text-sm">
-                <thead className="border-b border-gray-100">
-                  <tr>
-                    <th className="text-left px-4 py-2.5 text-gray-500 font-medium text-xs uppercase tracking-wide">Member</th>
-                    <th className="text-left px-4 py-2.5 text-gray-500 font-medium text-xs uppercase tracking-wide">Role</th>
-                    <th className="text-left px-4 py-2.5 text-gray-500 font-medium text-xs uppercase tracking-wide">
+              <table className="w-full text-sm" style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700 }}>
+                <thead>
+                  <tr className="border-b-2 border-gray-300">
+                    <th className="text-left px-4 py-3 text-sm font-bold text-gray-900 whitespace-nowrap">Member</th>
+                    <th className="text-left px-4 py-3 text-sm font-bold text-gray-900 whitespace-nowrap">Role</th>
+                    <th className="text-left px-4 py-3 text-sm font-bold text-gray-900 whitespace-nowrap">
                       {isPast ? 'Status' : 'Mark Attendance'}
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody>
                   {rows.map(({ member, status, readonly }) => (
-                    <tr key={member.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3 font-medium text-slate-800">{member.name}</td>
-                      <td className="px-4 py-3">
-                        <span className="text-xs text-gray-400 capitalize">{member.role}</span>
-                      </td>
-                      <td className="px-4 py-3">
+                    <tr key={member.id} className="border-b border-gray-600 last:border-0 hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-2 text-gray-600 text-sm font-bold">{member.name}</td>
+                      <td className="px-4 py-2 text-gray-600 text-sm font-bold capitalize">{member.role}</td>
+                      <td className="px-4 py-2 text-gray-600 text-sm font-bold">
                         {readonly ? (
                           // Past: read-only badge
                           status
@@ -198,6 +196,7 @@ const AttendancePage = () => {
                   ))}
                 </tbody>
               </table>
+
             </div>
           )}
         </>

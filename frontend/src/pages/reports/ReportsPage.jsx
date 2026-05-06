@@ -145,7 +145,7 @@ const ReportsPage = () => {
             <p className="text-xs text-gray-400">View the full breakdown per member in the table</p>
             <button
               onClick={() => setView('table')}
-              className="flex items-center gap-1.5 bg-slate-500 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
+              className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
             >
               <Table2 size={13} /> View Table
             </button>
@@ -182,7 +182,7 @@ const ReportsPage = () => {
                 </p>
                 <button
                   onClick={() => setTableFullscreen(true)}
-                  className="flex items-center gap-1.5 bg-slate-500 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                  className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
                 >
                   <Maximize2 size={13} /> Full screen
                 </button>

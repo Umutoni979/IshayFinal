@@ -86,7 +86,7 @@ const RehearsalCalendarPage = () => {
         {canWrite && (
           <button
             onClick={() => setShowCreate(true)}
-            className="bg-slate-500 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
+            className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
           >
             + Rehearsal
           </button>
@@ -229,7 +229,7 @@ const RehearsalCalendarPage = () => {
                   Cancel
                 </button>
                 <button type="submit" disabled={createMutation.isPending}
-                  className="flex-1 bg-slate-500 hover:bg-slate-600 text-white py-2 rounded text-sm font-medium disabled:opacity-60 transition-colors">
+                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-2 rounded text-sm font-medium disabled:opacity-60 transition-colors">
                   {createMutation.isPending ? 'Saving…' : 'Schedule Rehearsal'}
                 </button>
               </div>
