@@ -752,7 +752,19 @@ const ReportTab = ({ productionId, production, canManage }) => {
 
   const saveMutation = useMutation({
     mutationFn: (data) => productionsApi.savePerformanceReport(productionId, data),
-    onSuccess: () => { qc.invalidateQueries(['performance-report', productionId]); setEditing(false); toast.success('Report saved!'); },
+    onSuccess: async () => {
+      qc.invalidateQueries(['performance-report', productionId]);
+      setEditing(false);
+      // auto-advance production → completed
+      try {
+        await productionsApi.update(productionId, { status: 'completed' });
+        qc.invalidateQueries(['productions']);
+        qc.invalidateQueries(['production', productionId]);
+        toast.success('Report saved! Production marked as completed.');
+      } catch (_) {
+        toast.success('Report saved!');
+      }
+    },
     onError: () => toast.error('Failed to save report'),
   });
 
@@ -881,10 +893,21 @@ const ProductionDetailPage = () => {
   const canWrite    = usePermission('productions:write');
   const canCoord    = usePermission('rehearsals:write');
   const canManage   = canWrite || canCoord;
+  const qc          = useQueryClient();
 
   const { data: production, isLoading } = useQuery({
     queryKey: ['production', id],
     queryFn:  () => productionsApi.getById(id).then(r => r.data.data.production),
+  });
+
+  const statusMutation = useMutation({
+    mutationFn: (status) => productionsApi.update(id, { status }),
+    onSuccess: () => {
+      qc.invalidateQueries(['production', id]);
+      qc.invalidateQueries(['productions']);
+      toast.success('Status updated');
+    },
+    onError: () => toast.error('Failed to update status'),
   });
 
   const { data: milestones = [] } = useQuery({
@@ -908,7 +931,21 @@ const ProductionDetailPage = () => {
       <div className="bg-white border border-gray-200 rounded-xl p-6 mb-5">
         <div className="flex items-center gap-2 mb-2">
           <Clapperboard size={16} className="text-slate-500 shrink-0" />
-          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full capitalize ${badgeCls}`}>{production.status}</span>
+          {canManage ? (
+            <select
+              value={production.status}
+              disabled={statusMutation.isPending}
+              onChange={e => statusMutation.mutate(e.target.value)}
+              className={`text-xs font-semibold px-2 py-0.5 rounded-full capitalize border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-300 ${badgeCls}`}
+            >
+              <option value="planning">Planning</option>
+              <option value="active">Active</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          ) : (
+            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full capitalize ${badgeCls}`}>{production.status}</span>
+          )}
         </div>
         <h1 className="text-2xl font-normal text-slate-800 leading-tight mb-2">{production.title}</h1>
         {production.description && <p className="text-sm text-gray-500 mb-4">{production.description}</p>}
