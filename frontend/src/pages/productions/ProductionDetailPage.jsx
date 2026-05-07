@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productionsApi } from '../../api/productionsApi';
@@ -768,6 +768,18 @@ const ReportTab = ({ productionId, production, canManage }) => {
     onError: () => toast.error('Failed to save report'),
   });
 
+  // auto-heal: if report exists but production isn't completed yet, fix it
+  useEffect(() => {
+    if (report && production?.status !== 'completed') {
+      productionsApi.update(productionId, { status: 'completed' })
+        .then(() => {
+          qc.invalidateQueries(['productions']);
+          qc.invalidateQueries(['production', productionId]);
+        })
+        .catch(() => {});
+    }
+  }, [report?.id]);
+
   const startEdit = () => {
     setForm(report
       ? { performance_date: report.performance_date||'', venue: report.venue||'', audience_count: report.audience_count||'', summary: report.summary||'', outcomes: report.outcomes||'', observations: report.observations||'' }
@@ -917,6 +929,18 @@ const ProductionDetailPage = () => {
   });
 
   const allMilestonesDone = milestones.length > 0 && milestones.every(m => m.status === 'completed');
+
+  // auto-heal: if rehearsals already exist but status is still planning, advance to active
+  useEffect(() => {
+    if (production?.status === 'planning' && (production?.Rehearsals?.length ?? 0) > 0) {
+      productionsApi.update(id, { status: 'active' })
+        .then(() => {
+          qc.invalidateQueries(['productions']);
+          qc.invalidateQueries(['production', id]);
+        })
+        .catch(() => {});
+    }
+  }, [production?.id, production?.status, production?.Rehearsals?.length]);
 
   if (isLoading) return <DetailSkeleton />;
   if (!production) return <div className="text-red-500 text-sm">Production not found.</div>;
