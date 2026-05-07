@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+﻿import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { usersApi } from '../../api/usersApi';
 import { DetailSkeleton } from '../../components/common/Skeleton';
@@ -36,11 +36,11 @@ const MemberDetailPage = () => {
             {['present', 'absent', 'late', 'excused'].map(s => (
               <div key={s} className="bg-gray-50 rounded-lg p-3">
                 <p className="text-xl font-bold text-gray-800">{summary[s] ?? 0}</p>
-                <p className="text-xs text-gray-500">{s}</p>
+                <p className="text-xs text-gray-600">{s}</p>
               </div>
             ))}
           </div>
-          <p className="mt-3 text-sm text-gray-500">Attendance rate: <strong>{summary.attendance_rate}%</strong></p>
+          <p className="mt-3 text-sm text-gray-600">Attendance rate: <strong>{summary.attendance_rate}%</strong></p>
         </div>
       )}
     </div>

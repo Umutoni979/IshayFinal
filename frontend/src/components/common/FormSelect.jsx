@@ -27,7 +27,7 @@ const FormSelect = ({ value, onChange, options = [], placeholder, required, clas
         style={{ color: value ? '#1e293b' : '#9ca3af' }}
       >
         <span className="truncate">{activeLabel || placeholder || 'Select…'}</span>
-        <ChevronDown size={14} className={`text-gray-400 shrink-0 ml-2 transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown size={14} className={`text-gray-600 shrink-0 ml-2 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {required && (

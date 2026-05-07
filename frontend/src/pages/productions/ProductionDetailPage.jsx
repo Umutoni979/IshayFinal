@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productionsApi } from '../../api/productionsApi';
@@ -24,7 +24,7 @@ const MILESTONE_CATEGORY_ICON = {
 };
 
 const MILESTONE_STATUS_COLOR = {
-  pending:     'text-gray-300',
+  pending:     'text-gray-600',
   in_progress: 'text-orange-500',
   completed:   'text-green-500',
 };
@@ -48,7 +48,7 @@ const EVENT_TYPE_COLOR = {
 };
 
 const attendanceColor = (rate) => {
-  if (rate === null || rate === undefined) return 'text-gray-400';
+  if (rate === null || rate === undefined) return 'text-gray-600';
   if (rate >= 80) return 'text-green-600';
   if (rate >= 60) return 'text-orange-500';
   return 'text-red-500';
@@ -205,7 +205,7 @@ const TimelineTab = ({ productionId, canManage }) => {
     onError: () => toast.error('Failed to seed milestones'),
   });
 
-  if (isLoading) return <div className="text-gray-400 text-sm py-12 text-center">Loading…</div>;
+  if (isLoading) return <div className="text-gray-600 text-sm py-12 text-center">Loading…</div>;
 
   if (!milestones.length) return (
     <div className="flex flex-col items-center justify-center py-20 gap-4">
@@ -214,7 +214,7 @@ const TimelineTab = ({ productionId, canManage }) => {
       </div>
       <div className="text-center">
         <p className="text-sm font-semibold text-slate-600 mb-1">No milestones yet</p>
-        <p className="text-xs text-gray-400">Load the default checklist or add your own milestones.</p>
+        <p className="text-xs text-gray-600">Load the default checklist or add your own milestones.</p>
       </div>
       {canManage && (
         <div className="flex gap-3">
@@ -510,8 +510,8 @@ const AttendanceTab = ({ productionId }) => {
     queryFn:  () => productionsApi.getRehearsalAttendance(productionId).then(r => r.data.data.rehearsals),
   });
 
-  if (isLoading) return <div className="text-gray-400 text-sm py-8 text-center">Loading…</div>;
-  if (!rehearsals.length) return <div className="text-center py-16 text-gray-400 text-sm">No rehearsals for this production yet.</div>;
+  if (isLoading) return <div className="text-gray-600 text-sm py-8 text-center">Loading…</div>;
+  if (!rehearsals.length) return <div className="text-center py-16 text-gray-600 text-sm">No rehearsals for this production yet.</div>;
 
   const totalPresent = rehearsals.reduce((s, r) => s + r.counts.present + r.counts.late, 0);
   const totalRecords = rehearsals.reduce((s, r) => s + r.total, 0);
@@ -529,7 +529,7 @@ const AttendanceTab = ({ productionId }) => {
         ].map(({ label, value, color }) => (
           <div key={label} className="bg-white border border-gray-200 rounded-lg p-4 text-center">
             <p className={`text-2xl font-black ${color}`}>{value}</p>
-            <p className="text-xs text-gray-500 mt-0.5">{label}</p>
+            <p className="text-xs text-gray-600 mt-0.5">{label}</p>
           </div>
         ))}
       </div>
@@ -542,29 +542,29 @@ const AttendanceTab = ({ productionId }) => {
               className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left"
               onClick={() => setOpenId(openId === r.id ? null : r.id)}
             >
-              <CalendarDays size={15} className="text-gray-400 shrink-0" />
+              <CalendarDays size={15} className="text-gray-600 shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-slate-800">{r.title}</p>
-                <p className="text-xs text-gray-400">{formatDate(r.date)} · {r.rehearsal_type?.replace('_',' ')}{r.location ? ` · ${r.location}` : ''}</p>
+                <p className="text-xs text-gray-600">{formatDate(r.date)} · {r.rehearsal_type?.replace('_',' ')}{r.location ? ` · ${r.location}` : ''}</p>
               </div>
               <div className="flex items-center gap-4 shrink-0">
                 <div className="flex gap-2 text-xs font-semibold">
                   <span className="text-green-600">{r.counts.present}P</span>
                   <span className="text-red-500">{r.counts.absent}A</span>
                   <span className="text-orange-500">{r.counts.late}L</span>
-                  <span className="text-gray-400">{r.counts.excused}E</span>
+                  <span className="text-gray-600">{r.counts.excused}E</span>
                 </div>
                 {r.attendance_rate !== null && (
                   <span className={`text-sm font-bold w-10 text-right ${attendanceColor(r.attendance_rate)}`}>{r.attendance_rate}%</span>
                 )}
-                <ChevronRight size={14} className={`text-gray-400 transition-transform duration-200 ${openId === r.id ? 'rotate-90' : ''}`} />
+                <ChevronRight size={14} className={`text-gray-600 transition-transform duration-200 ${openId === r.id ? 'rotate-90' : ''}`} />
               </div>
             </button>
 
             {openId === r.id && (
               <div className="border-t border-gray-100 px-4 py-3">
                 {!r.records.length ? (
-                  <p className="text-xs text-gray-400 py-1">No attendance records marked yet.</p>
+                  <p className="text-xs text-gray-600 py-1">No attendance records marked yet.</p>
                 ) : (
                   <div className="grid grid-cols-2 gap-1">
                     {r.records.map(rec => (
@@ -575,7 +575,7 @@ const AttendanceTab = ({ productionId }) => {
                           rec.status === 'excused' ? 'bg-gray-400'  : 'bg-red-400'
                         }`} />
                         <span className="text-xs text-slate-700 flex-1 truncate">{rec.member?.name || '—'}</span>
-                        <span className="text-xs capitalize text-gray-500 shrink-0">{rec.status}</span>
+                        <span className="text-xs capitalize text-gray-600 shrink-0">{rec.status}</span>
                       </div>
                     ))}
                   </div>
@@ -668,12 +668,12 @@ const EventsTab = ({ productionId, canManage }) => {
     </div>
   );
 
-  if (isLoading) return <div className="text-gray-400 text-sm py-8 text-center">Loading…</div>;
+  if (isLoading) return <div className="text-gray-600 text-sm py-8 text-center">Loading…</div>;
 
   return (
     <div className="space-y-2">
       {!events.length && !showForm && (
-        <div className="text-center py-12 text-gray-400 text-sm">No events logged for this production.</div>
+        <div className="text-center py-12 text-gray-600 text-sm">No events logged for this production.</div>
       )}
 
       {events.map(ev => (
@@ -689,7 +689,7 @@ const EventsTab = ({ productionId, canManage }) => {
           <div key={ev.id} className="bg-white border border-gray-200 rounded-lg p-4 flex gap-4 items-start">
             <div className="w-10 text-center shrink-0 bg-slate-50 rounded-lg py-1.5">
               <p className="text-base font-black text-slate-800 leading-none">{new Date(ev.event_date+'T00:00:00').getDate()}</p>
-              <p className="text-[9px] text-gray-400 uppercase tracking-wide">{new Date(ev.event_date+'T00:00:00').toLocaleString('default',{month:'short'})}</p>
+              <p className="text-[9px] text-gray-600 uppercase tracking-wide">{new Date(ev.event_date+'T00:00:00').toLocaleString('default',{month:'short'})}</p>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5 flex-wrap">
@@ -702,18 +702,18 @@ const EventsTab = ({ productionId, canManage }) => {
                   ev.status === 'cancelled' ? 'bg-red-100 text-red-500'    : 'bg-orange-100 text-orange-700'
                 }`}>{ev.status}</span>
               </div>
-              {ev.event_time  && <p className="text-xs text-gray-400">{ev.event_time.slice(0,5)}</p>}
-              {ev.description && <p className="text-xs text-gray-500 mt-1">{ev.description}</p>}
-              {ev.created_by  && <p className="text-[11px] text-gray-400 mt-1">Logged by {ev.created_by.name}</p>}
+              {ev.event_time  && <p className="text-xs text-gray-600">{ev.event_time.slice(0,5)}</p>}
+              {ev.description && <p className="text-xs text-gray-600 mt-1">{ev.description}</p>}
+              {ev.created_by  && <p className="text-[11px] text-gray-600 mt-1">Logged by {ev.created_by.name}</p>}
             </div>
             {canManage && (
               <div className="flex gap-1 shrink-0">
                 <button onClick={() => { setEditId(ev.id); setForm({ title: ev.title, description: ev.description||'', event_date: ev.event_date, event_time: ev.event_time||'', event_type: ev.event_type, status: ev.status }); }}
-                  className="p-1.5 text-gray-400 hover:text-slate-700 hover:bg-gray-100 rounded transition-colors">
+                  className="p-1.5 text-gray-600 hover:text-slate-700 hover:bg-gray-100 rounded transition-colors">
                   <Pencil size={13} />
                 </button>
                 <button onClick={() => deleteMutation.mutate(ev.id)}
-                  className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors">
+                  className="p-1.5 text-gray-600 hover:text-red-500 hover:bg-red-50 rounded transition-colors">
                   <Trash2 size={13} />
                 </button>
               </div>
@@ -727,7 +727,7 @@ const EventsTab = ({ productionId, canManage }) => {
           ? renderForm(() => createMutation.mutate(form), () => { setShowForm(false); setForm(EMPTY_EVENT); }, createMutation.isPending)
           : (
             <button onClick={() => setShowForm(true)}
-              className="w-full py-2.5 border border-dashed border-gray-300 rounded-lg text-xs text-gray-500 hover:border-slate-400 hover:text-slate-700 transition-colors flex items-center justify-center gap-1.5 mt-1">
+              className="w-full py-2.5 border border-dashed border-gray-300 rounded-lg text-xs text-gray-600 hover:border-slate-400 hover:text-slate-700 transition-colors flex items-center justify-center gap-1.5 mt-1">
               <Plus size={13} /> Log Event
             </button>
           )
@@ -788,7 +788,7 @@ const ReportTab = ({ productionId, production, canManage }) => {
     setEditing(true);
   };
 
-  if (isLoading) return <div className="text-gray-400 text-sm py-8 text-center">Loading…</div>;
+  if (isLoading) return <div className="text-gray-600 text-sm py-8 text-center">Loading…</div>;
 
   if (editing || (!report && canManage)) {
     return (
@@ -833,10 +833,10 @@ const ReportTab = ({ productionId, production, canManage }) => {
 
   if (!report) {
     return (
-      <div className="text-center py-20 text-gray-400">
+      <div className="text-center py-20 text-gray-600">
         <BarChart3 size={36} className="mx-auto mb-3 opacity-30" />
         <p className="text-sm font-medium">No performance report yet</p>
-        <p className="text-xs mt-1 text-gray-300">Report will be filled in after the performance</p>
+        <p className="text-xs mt-1 text-gray-600">Report will be filled in after the performance</p>
       </div>
     );
   }
@@ -846,7 +846,7 @@ const ReportTab = ({ productionId, production, canManage }) => {
       <div className="flex items-start justify-between">
         <div>
           <h3 className="text-base font-bold text-slate-800">Performance Report</h3>
-          {report.created_by && <p className="text-xs text-gray-400 mt-0.5">Filed by {report.created_by.name}</p>}
+          {report.created_by && <p className="text-xs text-gray-600 mt-0.5">Filed by {report.created_by.name}</p>}
         </div>
         {canManage && (
           <button onClick={startEdit}
@@ -863,7 +863,7 @@ const ReportTab = ({ productionId, production, canManage }) => {
           { label: 'Audience',        value: report.audience_count ? `${report.audience_count} people` : '—' },
         ].map(({ label, value }) => (
           <div key={label} className="bg-gray-50 rounded-lg p-3">
-            <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-0.5">{label}</p>
+            <p className="text-[10px] text-gray-600 font-medium uppercase tracking-wide mb-0.5">{label}</p>
             <p className="text-sm font-semibold text-slate-800">{value}</p>
           </div>
         ))}
@@ -875,7 +875,7 @@ const ReportTab = ({ productionId, production, canManage }) => {
         { label: 'Observations & Improvements',  value: report.observations },
       ].filter(s => s.value).map(({ label, value }) => (
         <div key={label}>
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">{label}</p>
+          <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">{label}</p>
           <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">{value}</p>
         </div>
       ))}
@@ -972,8 +972,8 @@ const ProductionDetailPage = () => {
           )}
         </div>
         <h1 className="text-2xl font-normal text-slate-800 leading-tight mb-2">{production.title}</h1>
-        {production.description && <p className="text-sm text-gray-500 mb-4">{production.description}</p>}
-        <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-gray-500">
+        {production.description && <p className="text-sm text-gray-600 mb-4">{production.description}</p>}
+        <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-gray-600">
           {production.director   && <span><span className="font-medium text-gray-700">Director:</span> {production.director.name}</span>}
           {production.venue      && <span><span className="font-medium text-gray-700">Venue:</span> {production.venue}</span>}
           {production.start_date && <span><span className="font-medium text-gray-700">Dates:</span> {formatDate(production.start_date)}{production.end_date ? ` → ${formatDate(production.end_date)}` : ''}</span>}
@@ -994,14 +994,14 @@ const ProductionDetailPage = () => {
               title={isReportLocked ? 'Complete all milestones first' : undefined}
               className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
                 isReportLocked
-                  ? 'border-transparent text-gray-300 cursor-not-allowed'
+                  ? 'border-transparent text-gray-600 cursor-not-allowed'
                   : tab === t.key
                     ? 'border-slate-800 text-slate-800'
-                    : 'border-transparent text-gray-400 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-gray-600 hover:text-gray-700 hover:border-gray-300'
               }`}>
               <Icon size={14} />
               {t.label}
-              {isReportLocked && <span className="ml-1 text-[10px] text-gray-300">🔒</span>}
+              {isReportLocked && <span className="ml-1 text-[10px] text-gray-600">🔒</span>}
             </button>
           );
         })}

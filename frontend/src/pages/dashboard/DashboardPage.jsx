@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+﻿import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useQuery } from '@tanstack/react-query';
@@ -91,7 +91,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-4 py-3">
-      {label && <p className="text-xs font-semibold text-gray-500 mb-1">{label}</p>}
+      {label && <p className="text-xs font-semibold text-gray-600 mb-1">{label}</p>}
       {payload.map((p, i) => (
         <p key={i} className="text-sm font-bold" style={{ color: p.color }}>{p.name}: {p.value}</p>
       ))}
@@ -195,8 +195,8 @@ const DashboardPage = () => {
         </div>
         <div>
           <h1 className="text-[28px] font-normal text-slate-800 leading-tight">ISHYA Culture Troup</h1>
-          <p className="text-sm text-gray-500 mt-0.5">by <span className="text-orange-500 font-semibold">{user?.name}</span></p>
-          <p className="text-xs text-gray-400 mt-0.5">{user?.role} · Management System</p>
+          <p className="text-sm text-gray-600 mt-0.5">by <span className="text-orange-500 font-semibold">{user?.name}</span></p>
+          <p className="text-xs text-gray-600 mt-0.5">{user?.role} · Management System</p>
         </div>
       </div>
 
@@ -222,7 +222,7 @@ const DashboardPage = () => {
         {TABS.map(t => (
           <button key={t} onClick={() => setTab(t)}
             className={`px-5 py-3 text-sm font-semibold transition-colors border-b-2 -mb-px ${
-              tab === t ? 'border-orange-500 text-orange-500' : 'border-transparent text-gray-500 hover:text-slate-700'
+              tab === t ? 'border-orange-500 text-orange-500' : 'border-transparent text-gray-600 hover:text-slate-700'
             }`}
           >{t}</button>
         ))}
@@ -235,7 +235,7 @@ const DashboardPage = () => {
           {/* Activity area chart — rehearsals + productions */}
           <div className="bg-white border border-gray-100 rounded-2xl p-6">
             <h2 className="text-sm font-bold text-slate-800 mb-1">Activity Overview</h2>
-            <p className="text-xs text-gray-400 mb-5">Rehearsals &amp; productions per month</p>
+            <p className="text-xs text-gray-600 mb-5">Rehearsals &amp; productions per month</p>
             {activityByMonth.length === 0 ? (
               <EmptyState type="rehearsals" message="No activity data yet." />
             ) : (
@@ -277,7 +277,7 @@ const DashboardPage = () => {
             {/* Productions by status donut */}
             <div className="bg-white border border-gray-100 rounded-2xl p-6">
               <h2 className="text-sm font-bold text-slate-800 mb-1">Productions by Status</h2>
-              <p className="text-xs text-gray-400 mb-4">Distribution across all productions</p>
+              <p className="text-xs text-gray-600 mb-4">Distribution across all productions</p>
               {productionsByStatus.length === 0 ? (
                 <EmptyState type="productions" message="No productions yet." />
               ) : (
@@ -299,7 +299,7 @@ const DashboardPage = () => {
             {isStaff && (
               <div className="bg-white border border-gray-100 rounded-2xl p-6">
                 <h2 className="text-sm font-bold text-slate-800 mb-1">Members by Role</h2>
-                <p className="text-xs text-gray-400 mb-4">Breakdown of member roles</p>
+                <p className="text-xs text-gray-600 mb-4">Breakdown of member roles</p>
                 {membersByRole.length === 0 ? (
                   <EmptyState type="members" message="No members yet." />
                 ) : (
@@ -328,11 +328,11 @@ const DashboardPage = () => {
                   <div key={r.id} className="flex justify-between items-center py-3">
                     <div>
                       <p className="font-semibold text-slate-800 text-sm">{r.title}</p>
-                      <p className="text-xs text-gray-400">{r.location || '—'}</p>
+                      <p className="text-xs text-gray-600">{r.location || '—'}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-gray-500 font-medium">{formatDate(r.date)}</p>
-                      {r.start_time && <p className="text-xs text-gray-400">{formatTime(r.start_time)}</p>}
+                      <p className="text-xs text-gray-600 font-medium">{formatDate(r.date)}</p>
+                      {r.start_time && <p className="text-xs text-gray-600">{formatTime(r.start_time)}</p>}
                     </div>
                   </div>
                 ))}
@@ -349,7 +349,7 @@ const DashboardPage = () => {
           {/* Bar chart: rehearsals per month */}
           <div className="bg-white border border-gray-100 rounded-2xl p-6">
             <h2 className="text-sm font-bold text-slate-800 mb-1">Rehearsals Per Month</h2>
-            <p className="text-xs text-gray-400 mb-5">Monthly rehearsal frequency</p>
+            <p className="text-xs text-gray-600 mb-5">Monthly rehearsal frequency</p>
             {rehearsalsByMonth.length === 0 ? (
               <EmptyState type="rehearsals" message="No data yet." />
             ) : (
@@ -368,7 +368,7 @@ const DashboardPage = () => {
           {/* Rehearsal types donut */}
           <div className="bg-white border border-gray-100 rounded-2xl p-6">
             <h2 className="text-sm font-bold text-slate-800 mb-1">Rehearsal Types</h2>
-            <p className="text-xs text-gray-400 mb-4">Breakdown by rehearsal type</p>
+            <p className="text-xs text-gray-600 mb-4">Breakdown by rehearsal type</p>
             {rehearsalTypes.length === 0 ? (
               <EmptyState type="rehearsals" message="No data yet." />
             ) : (
@@ -395,7 +395,7 @@ const DashboardPage = () => {
           {/* Productions by status donut — large */}
           <div className="bg-white border border-gray-100 rounded-2xl p-6">
             <h2 className="text-sm font-bold text-slate-800 mb-1">Productions by Status</h2>
-            <p className="text-xs text-gray-400 mb-4">Current status distribution</p>
+            <p className="text-xs text-gray-600 mb-4">Current status distribution</p>
             {productionsByStatus.length === 0 ? (
               <EmptyState type="productions" message="No productions yet." />
             ) : (
@@ -417,7 +417,7 @@ const DashboardPage = () => {
           {/* Bar chart: productions by status */}
           <div className="bg-white border border-gray-100 rounded-2xl p-6">
             <h2 className="text-sm font-bold text-slate-800 mb-1">Productions Overview</h2>
-            <p className="text-xs text-gray-400 mb-5">Count per status category</p>
+            <p className="text-xs text-gray-600 mb-5">Count per status category</p>
             {productionsByStatus.length === 0 ? (
               <EmptyState type="productions" message="No data yet." />
             ) : (

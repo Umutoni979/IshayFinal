@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+﻿import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { rolesApi } from '../../api/rolesApi';
 import { productionsApi } from '../../api/productionsApi';
@@ -34,10 +34,10 @@ const MemberPicker = ({ value, onChange, members }) => {
     <div ref={ref} className="relative">
       <button type="button" onClick={() => setOpen(o => !o)}
         className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-slate-300 flex items-center justify-between bg-white">
-        <span className={selected ? 'text-slate-800' : 'text-gray-400'}>
+        <span className={selected ? 'text-slate-800' : 'text-gray-600'}>
           {selected ? selected.name : 'Select member…'}
         </span>
-        <span className="text-gray-300 text-xs">▼</span>
+        <span className="text-gray-600 text-xs">▼</span>
       </button>
       {open && (
         <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden">
@@ -49,17 +49,17 @@ const MemberPicker = ({ value, onChange, members }) => {
           <ul className="max-h-44 overflow-y-auto">
             <li>
               <button type="button" onClick={() => { onChange(''); setOpen(false); setQuery(''); }}
-                className="w-full text-left px-3 py-2 text-xs text-gray-400 hover:bg-gray-50">
+                className="w-full text-left px-3 py-2 text-xs text-gray-600 hover:bg-gray-50">
                 — No assignment yet
               </button>
             </li>
-            {filtered.length === 0 && <li className="px-3 py-2 text-xs text-gray-400">No members found</li>}
+            {filtered.length === 0 && <li className="px-3 py-2 text-xs text-gray-600">No members found</li>}
             {filtered.map(m => (
               <li key={m.id}>
                 <button type="button" onClick={() => { onChange(m.id); setOpen(false); setQuery(''); }}
                   className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 ${value === m.id ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-700'}`}>
                   {m.name}
-                  <span className="text-xs text-gray-400 ml-2 capitalize">{m.role}</span>
+                  <span className="text-xs text-gray-600 ml-2 capitalize">{m.role}</span>
                 </button>
               </li>
             ))}
@@ -183,7 +183,7 @@ const RolesPage = () => {
         <div className="max-w-2xl">
           <div className="flex items-center gap-3 mb-8">
             <button onClick={() => { setActiveForm(null); setProductionId(''); setRows([newRow()]); }}
-              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-slate-700 transition-colors">
+              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 hover:text-slate-700 transition-colors">
               <ArrowLeft size={18} />
             </button>
             <h2 className="text-xl font-bold text-slate-800">Assign Roles</h2>
@@ -201,7 +201,7 @@ const RolesPage = () => {
             <div className="flex items-start py-4">
               <span className="w-44 shrink-0 text-sm font-bold text-slate-700 pt-2">Roles</span>
               <div className="flex-1 space-y-3">
-                <div className="grid grid-cols-[1fr_1fr_auto] gap-2 text-xs font-medium text-gray-500 px-1">
+                <div className="grid grid-cols-[1fr_1fr_auto] gap-2 text-xs font-medium text-gray-600 px-1">
                   <span>Role / Task</span><span>Assign to</span><span></span>
                 </div>
                 {rows.map(row => (
@@ -211,7 +211,7 @@ const RolesPage = () => {
                       className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300" />
                     <MemberPicker value={row.assigned_to_id} onChange={val => updateRow(row.id, 'assigned_to_id', val)} members={members} />
                     <button type="button" onClick={() => removeRow(row.id)}
-                      className="p-2 text-gray-300 hover:text-red-400 transition-colors">
+                      className="p-2 text-gray-600 hover:text-red-400 transition-colors">
                       <Trash2 size={15} />
                     </button>
                   </div>
@@ -243,7 +243,7 @@ const RolesPage = () => {
         <div className="max-w-xl">
           <div className="flex items-center gap-3 mb-8">
             <button onClick={() => { setActiveForm(null); setEditRole(null); }}
-              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-slate-700 transition-colors">
+              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 hover:text-slate-700 transition-colors">
               <ArrowLeft size={18} />
             </button>
             <h2 className="text-xl font-bold text-slate-800">Edit Role</h2>
@@ -286,7 +286,7 @@ const RolesPage = () => {
                         members={members} />
                       <button type="button"
                         onClick={() => setEditRole(er => ({ ...er, extraRows: er.extraRows.filter(r => r.id !== row.id) }))}
-                        className="p-2 text-gray-300 hover:text-red-400 transition-colors">
+                        className="p-2 text-gray-600 hover:text-red-400 transition-colors">
                         <Trash2 size={15} />
                       </button>
                     </div>
@@ -329,7 +329,7 @@ const RolesPage = () => {
               </button>
             )}
           </div>
-          <p className="text-sm text-gray-400 mb-6">Manage and approve production role assignments</p>
+          <p className="text-sm text-gray-600 mb-6">Manage and approve production role assignments</p>
 
           <SearchFilters search={search} onSearch={setSearch}
             placeholder="Search by role title or production…"
@@ -349,15 +349,15 @@ const RolesPage = () => {
                   <button type="button" onClick={() => toggleExpand(key)}
                     className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-gray-50 transition-colors text-left">
                     <div className="flex items-center gap-3">
-                      {isOpen ? <ChevronDown size={14} className="text-gray-400" /> : <ChevronRight size={14} className="text-gray-400" />}
+                      {isOpen ? <ChevronDown size={14} className="text-gray-600" /> : <ChevronRight size={14} className="text-gray-600" />}
                       <span className="font-semibold text-slate-800 text-sm">
-                        {member ? member.name : <span className="text-gray-400 font-normal">Unassigned</span>}
+                        {member ? member.name : <span className="text-gray-600 font-normal">Unassigned</span>}
                       </span>
-                      <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                      <span className="text-xs text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full">
                         {roles.length} {roles.length === 1 ? 'role' : 'roles'}
                       </span>
                     </div>
-                    <span className="text-xs text-gray-400 capitalize">{member?.role ?? ''}</span>
+                    <span className="text-xs text-gray-600 capitalize">{member?.role ?? ''}</span>
                   </button>
 
                   {isOpen && (
@@ -366,7 +366,7 @@ const RolesPage = () => {
                         <div key={r.id} className="flex items-center justify-between px-8 py-3 border-b border-gray-100 last:border-b-0">
                           <div className="flex items-center gap-4">
                             <span className="font-medium text-slate-700 text-sm">{r.title}</span>
-                            <span className="text-xs text-gray-400">{r.Production?.title ?? '—'}</span>
+                            <span className="text-xs text-gray-600">{r.Production?.title ?? '—'}</span>
                             <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColor[r.status]}`}>{r.status}</span>
                           </div>
                           {canWrite && (
@@ -376,7 +376,7 @@ const RolesPage = () => {
                                   setEditRole({ id: r.id, title: r.title, description: r.description ?? '', assigned_to_id: r.assigned_to?.id ?? '', productionId: r.production_id ?? '', extraRows: [] });
                                   setActiveForm({ type: 'edit' });
                                 }}
-                                className="p-1.5 text-gray-400 hover:text-slate-600 transition-colors">
+                                className="p-1.5 text-gray-600 hover:text-slate-600 transition-colors">
                                 <Pencil size={13} />
                               </button>
                               {r.assigned_to && (
@@ -386,7 +386,7 @@ const RolesPage = () => {
                                 </button>
                               )}
                               <button onClick={() => { if (window.confirm(`Delete role "${r.title}"?`)) deleteMutation.mutate(r.id); }}
-                                className="p-1.5 text-gray-400 hover:text-red-500 transition-colors">
+                                className="p-1.5 text-gray-600 hover:text-red-500 transition-colors">
                                 <Trash2 size={13} />
                               </button>
                             </div>

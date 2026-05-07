@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+﻿import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notificationsApi } from '../../api/notificationsApi';
 import { timeAgo } from '../../utils/formatDate';
 import toast from 'react-hot-toast';
@@ -51,10 +51,10 @@ const NotificationsPage = () => {
           >
             <div className="flex justify-between items-start mb-1">
               <p className={`text-sm font-semibold ${n.is_read ? 'text-gray-700' : 'text-slate-800'}`}>{n.title}</p>
-              <span className="text-xs text-gray-400">{timeAgo(n.created_at)}</span>
+              <span className="text-xs text-gray-600">{timeAgo(n.created_at)}</span>
             </div>
-            <p className="text-sm text-gray-500">{n.body}</p>
-            <p className="text-xs text-gray-400 mt-1">{n.type.replaceAll('_', ' ')}</p>
+            <p className="text-sm text-gray-600">{n.body}</p>
+            <p className="text-xs text-gray-600 mt-1">{n.type.replaceAll('_', ' ')}</p>
           </div>
         ))}
       </div>

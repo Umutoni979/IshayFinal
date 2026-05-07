@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+﻿import { useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
 import { usersApi } from '../../api/usersApi';
@@ -9,7 +9,7 @@ import { Camera, User, Monitor, Smartphone, Globe, Trash2, Theater } from 'lucid
 
 const BASIC_ROLES = ['actor', 'crew', 'guest'];
 const statusStyle = {
-  open:     'bg-gray-100 text-gray-500',
+  open:     'bg-gray-100 text-gray-600',
   assigned: 'bg-yellow-100 text-yellow-700',
   approved: 'bg-green-100 text-green-700',
 };
@@ -88,7 +88,7 @@ const ProfilePage = () => {
   return (
     <div>
       <h1 className="text-2xl font-normal text-slate-800 mb-1">My Profile</h1>
-      <p className="text-sm text-gray-400 mb-8">View and update your profile information</p>
+      <p className="text-sm text-gray-600 mb-8">View and update your profile information</p>
 
       <div className="bg-white border border-gray-200 rounded-sm p-8 max-w-lg">
         {/* Avatar section */}
@@ -129,21 +129,21 @@ const ProfilePage = () => {
           >
             {avatarMutation.isPending ? 'Uploading…' : 'Change photo'}
           </button>
-          <p className="text-xs text-gray-400 mt-1">JPG, PNG or WEBP · Max 2 MB</p>
+          <p className="text-xs text-gray-600 mt-1">JPG, PNG or WEBP · Max 2 MB</p>
         </div>
 
         {/* User info (read-only fields) */}
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Full Name</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Full Name</label>
             <div className="flex items-center gap-2 border border-gray-200 rounded px-3 py-2 bg-gray-50">
-              <User size={14} className="text-gray-400 shrink-0" />
+              <User size={14} className="text-gray-600 shrink-0" />
               <span className="text-sm text-slate-800">{user?.name}</span>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Email</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Email</label>
             <div className="border border-gray-200 rounded px-3 py-2 bg-gray-50">
               <span className="text-sm text-slate-800">{user?.email}</span>
             </div>
@@ -151,14 +151,14 @@ const ProfilePage = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Role</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Role</label>
               <div className="border border-gray-200 rounded px-3 py-2 bg-gray-50">
                 <span className="text-sm text-slate-800">{user?.role}</span>
               </div>
             </div>
             {user?.member_type && (
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Type</label>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Type</label>
                 <div className="border border-gray-200 rounded px-3 py-2 bg-gray-50">
                   <span className="text-sm text-slate-800">{user.member_type}</span>
                 </div>
@@ -173,17 +173,17 @@ const ProfilePage = () => {
           <h2 className="text-base font-bold text-slate-800 mb-1 flex items-center gap-2">
             <Theater size={16} className="text-indigo-500" /> My Production Roles
           </h2>
-          <p className="text-xs text-gray-400 mb-4">Parts you have been assigned to in productions.</p>
+          <p className="text-xs text-gray-600 mb-4">Parts you have been assigned to in productions.</p>
 
           {myRoles.length === 0 ? (
-            <p className="text-xs text-gray-400">No roles assigned to you yet.</p>
+            <p className="text-xs text-gray-600">No roles assigned to you yet.</p>
           ) : (
             <div className="space-y-2">
               {myRoles.map(role => (
                 <div key={role.id} className="flex items-center justify-between border border-gray-100 rounded-lg px-4 py-3">
                   <div>
                     <p className="text-sm font-semibold text-slate-800">{role.title}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{role.Production?.title || '—'}</p>
+                    <p className="text-xs text-gray-600 mt-0.5">{role.Production?.title || '—'}</p>
                   </div>
                   <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${statusStyle[role.status]}`}>
                     {role.status}
@@ -198,12 +198,12 @@ const ProfilePage = () => {
       {/* Sessions */}
       <div className="bg-white border border-gray-200 rounded-sm p-8 max-w-lg mt-6">
         <h2 className="text-base font-bold text-slate-800 mb-1">Active Sessions</h2>
-        <p className="text-xs text-gray-400 mb-4">These are devices currently signed into your account.</p>
+        <p className="text-xs text-gray-600 mb-4">These are devices currently signed into your account.</p>
 
         {sessionsLoading ? (
-          <p className="text-xs text-gray-400">Loading…</p>
+          <p className="text-xs text-gray-600">Loading…</p>
         ) : !sessionsData?.length ? (
-          <p className="text-xs text-gray-400">No session records yet.</p>
+          <p className="text-xs text-gray-600">No session records yet.</p>
         ) : (
           <div className="space-y-2">
             {sessionsData.map(s => {
@@ -212,13 +212,13 @@ const ProfilePage = () => {
               const DevIcon = dev.icon === 'phone' ? Smartphone : dev.icon === 'monitor' ? Monitor : Globe;
               return (
                 <div key={s.id} className={`flex items-center gap-3 p-3 rounded border ${s.is_current ? 'border-orange-200 bg-orange-50' : 'border-gray-100'}`}>
-                  <DevIcon size={18} className={s.is_current ? 'text-orange-400' : 'text-gray-400'} />
+                  <DevIcon size={18} className={s.is_current ? 'text-orange-400' : 'text-gray-600'} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-medium text-slate-700">{browser} · {dev.label}</span>
                       {s.is_current && <span className="text-[10px] bg-orange-100 text-orange-600 font-semibold px-1.5 py-0.5 rounded">Current</span>}
                     </div>
-                    <div className="text-[11px] text-gray-400 mt-0.5">
+                    <div className="text-[11px] text-gray-600 mt-0.5">
                       {s.ip_address || 'Unknown IP'} · {new Date(s.created_at).toLocaleString()}
                     </div>
                   </div>
@@ -226,7 +226,7 @@ const ProfilePage = () => {
                     <button
                       onClick={() => revokeSession.mutate(s.id)}
                       disabled={revokeSession.isPending}
-                      className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                      className="p-1.5 text-gray-600 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
                       title="Revoke session"
                     >
                       <Trash2 size={13} />

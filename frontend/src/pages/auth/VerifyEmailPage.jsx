@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { authApi } from '../../api/authApi';
 import toast from 'react-hot-toast';
@@ -43,7 +43,7 @@ const VerifyEmailPage = () => {
         <h1 className="text-[42px] font-black text-slate-800 text-center leading-tight tracking-tight">
           Check your Email
         </h1>
-        <p className="text-base text-gray-400 text-center mt-2.5 mb-9">
+        <p className="text-base text-gray-600 text-center mt-2.5 mb-9">
           Enter the 6-digit code we sent to your email address
         </p>
 
@@ -58,7 +58,7 @@ const VerifyEmailPage = () => {
           <div className="px-10 py-8">
             <div className="flex items-center gap-3 mb-7">
               <div className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs text-gray-400">enter your code below</span>
+              <span className="text-xs text-gray-600">enter your code below</span>
               <div className="flex-1 h-px bg-gray-200" />
             </div>
 
@@ -80,7 +80,7 @@ const VerifyEmailPage = () => {
                   {loading ? 'Verifying…' : 'Verify Account'}
                 </button>
               </div>
-              <p className="text-xs text-gray-400 text-center pt-2">
+              <p className="text-xs text-gray-600 text-center pt-2">
                 Code expires in 15 minutes. Log in again with your temp password to get a new one.
               </p>
             </form>

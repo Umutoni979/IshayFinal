@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { authApi } from '../../api/authApi';
 import { useAuth } from '../../context/AuthContext';
@@ -43,7 +43,7 @@ const SetPasswordPage = () => {
         <h1 className="text-[42px] font-black text-slate-800 text-center leading-tight tracking-tight">
           Set your Password
         </h1>
-        <p className="text-base text-gray-400 text-center mt-2.5 mb-9">
+        <p className="text-base text-gray-600 text-center mt-2.5 mb-9">
           Create a permanent password for your Ishya account
         </p>
 
@@ -58,7 +58,7 @@ const SetPasswordPage = () => {
           <div className="px-10 py-8">
             <div className="flex items-center gap-3 mb-7">
               <div className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs text-gray-400">almost done!</span>
+              <span className="text-xs text-gray-600">almost done!</span>
               <div className="flex-1 h-px bg-gray-200" />
             </div>
 

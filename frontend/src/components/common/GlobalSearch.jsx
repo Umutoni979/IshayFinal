@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+﻿import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Clock, X, ChevronRight } from 'lucide-react';
 import { productionsApi } from '../../api/productionsApi';
@@ -151,7 +151,7 @@ const GlobalSearch = ({ user }) => {
     <div ref={containerRef} className="flex-1 flex justify-center px-4 max-w-2xl mx-auto w-full relative">
       {/* Input */}
       <div className="flex items-center w-full max-w-xl relative bg-gray-100 rounded-full px-5 py-2.5 gap-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-gray-300 transition-all">
-        <Search size={16} className="text-gray-400 shrink-0" />
+        <Search size={16} className="text-gray-600 shrink-0" />
         <input
           ref={inputRef}
           type="text"
@@ -165,7 +165,7 @@ const GlobalSearch = ({ user }) => {
           <button
             type="button"
             onClick={() => { setQuery(''); setResults({}); inputRef.current?.focus(); }}
-            className="p-0.5 text-gray-400 hover:text-gray-600 shrink-0"
+            className="p-0.5 text-gray-600 hover:text-gray-600 shrink-0"
           >
             <X size={14} />
           </button>
@@ -178,7 +178,7 @@ const GlobalSearch = ({ user }) => {
 
           {/* Loading */}
           {loading && (
-            <div className="px-5 py-4 text-sm text-gray-400 flex items-center gap-2">
+            <div className="px-5 py-4 text-sm text-gray-600 flex items-center gap-2">
               <div className="w-3.5 h-3.5 border-2 border-gray-300 border-t-slate-500 rounded-full animate-spin" />
               Searching…
             </div>
@@ -186,7 +186,7 @@ const GlobalSearch = ({ user }) => {
 
           {/* Empty */}
           {showEmpty && (
-            <div className="px-5 py-6 text-sm text-gray-400 text-center">
+            <div className="px-5 py-6 text-sm text-gray-600 text-center">
               No results for "<span className="text-gray-600 font-medium">{query}</span>"
             </div>
           )}
@@ -199,7 +199,7 @@ const GlobalSearch = ({ user }) => {
                 const meta = CATEGORIES[category];
                 return (
                   <div key={category}>
-                    <p className="px-5 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                    <p className="px-5 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-gray-600">
                       {meta.label}s
                     </p>
                     {items.map(item => (
@@ -215,10 +215,10 @@ const GlobalSearch = ({ user }) => {
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-800 truncate">{getLabel(item, category)}</p>
                           {getSubLabel(item, category) && (
-                            <p className="text-xs text-gray-400 truncate">{getSubLabel(item, category)}</p>
+                            <p className="text-xs text-gray-600 truncate">{getSubLabel(item, category)}</p>
                           )}
                         </div>
-                        <ChevronRight size={13} className="text-gray-300 shrink-0" />
+                        <ChevronRight size={13} className="text-gray-600 shrink-0" />
                       </button>
                     ))}
                   </div>
@@ -231,11 +231,11 @@ const GlobalSearch = ({ user }) => {
           {showHistory && (
             <div className="py-2 max-h-[360px] overflow-y-auto">
               <div className="flex items-center justify-between px-5 pt-2 pb-1">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Recent searches</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">Recent searches</p>
                 <button
                   type="button"
                   onClick={clearHistory}
-                  className="text-[10px] text-gray-400 hover:text-red-500 transition-colors font-medium"
+                  className="text-[10px] text-gray-600 hover:text-red-500 transition-colors font-medium"
                 >
                   Clear all
                 </button>
@@ -247,15 +247,15 @@ const GlobalSearch = ({ user }) => {
                   onClick={() => handleHistoryClick(entry)}
                   className="w-full flex items-center gap-3 px-5 py-2.5 hover:bg-gray-50 transition-colors text-left group"
                 >
-                  <Clock size={14} className="text-gray-300 shrink-0" />
+                  <Clock size={14} className="text-gray-600 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-gray-700 truncate">{entry.label}</p>
-                    <p className="text-xs text-gray-400">{entry.category}</p>
+                    <p className="text-xs text-gray-600">{entry.category}</p>
                   </div>
                   <button
                     type="button"
                     onClick={(e) => removeHistory(i, e)}
-                    className="opacity-0 group-hover:opacity-100 p-1 text-gray-300 hover:text-gray-500 transition-all"
+                    className="opacity-0 group-hover:opacity-100 p-1 text-gray-600 hover:text-gray-600 transition-all"
                   >
                     <X size={12} />
                   </button>

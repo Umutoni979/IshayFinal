@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+﻿import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import Breadcrumb from './Breadcrumb';
 import Sidebar from './Sidebar';
@@ -74,7 +74,7 @@ const Layout = () => {
             className="p-2 rounded-full hover:bg-gray-100 transition-colors"
             aria-label="Toggle sidebar"
           >
-            <Menu size={20} className="text-gray-500" />
+            <Menu size={20} className="text-gray-600" />
           </button>
           <div className="hidden sm:flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-orange-500 flex items-center justify-center shrink-0">
@@ -118,7 +118,7 @@ const Layout = () => {
                       <button
                         onClick={() => markAllMutation.mutate()}
                         title="Mark all as read"
-                        className="flex items-center gap-1 text-[11px] text-gray-400 hover:text-slate-600 px-2 py-1 rounded-md hover:bg-gray-100 transition-colors"
+                        className="flex items-center gap-1 text-[11px] text-gray-600 hover:text-slate-600 px-2 py-1 rounded-md hover:bg-gray-100 transition-colors"
                       >
                         <CheckCheck size={13} /> Mark all read
                       </button>
@@ -126,7 +126,7 @@ const Layout = () => {
                     <button
                       onClick={() => { setBellOpen(false); navigate('/notifications'); }}
                       title="See all notifications"
-                      className="p-1.5 text-gray-400 hover:text-slate-600 rounded-md hover:bg-gray-100 transition-colors"
+                      className="p-1.5 text-gray-600 hover:text-slate-600 rounded-md hover:bg-gray-100 transition-colors"
                     >
                       <ExternalLink size={14} />
                     </button>
@@ -142,7 +142,7 @@ const Layout = () => {
                       className={`text-[13px] font-semibold pb-2.5 mr-5 border-b-2 transition-colors ${
                         tab === 'All'
                           ? 'border-orange-500 text-orange-500'
-                          : 'border-transparent text-gray-400 hover:text-slate-600'
+                          : 'border-transparent text-gray-600 hover:text-slate-600'
                       }`}
                     >
                       {tab}
@@ -168,7 +168,7 @@ const Layout = () => {
                         <ellipse cx="44" cy="94" rx="20" ry="5" fill="#1e293b" opacity="0.07"/>
                       </svg>
                       <p className="text-sm font-semibold text-slate-500">You're all caught up!</p>
-                      <p className="text-xs text-gray-400 mt-1">No notifications from the last 30 days.</p>
+                      <p className="text-xs text-gray-600 mt-1">No notifications from the last 30 days.</p>
                     </div>
                   ) : (
                     previewList.map(n => (
@@ -179,15 +179,15 @@ const Layout = () => {
                       >
                         {/* Icon circle */}
                         <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white text-[10px] font-bold mt-0.5 ${!n.is_read ? 'bg-orange-500' : 'bg-gray-200'}`}>
-                          <Bell size={13} className={!n.is_read ? 'text-white' : 'text-gray-400'} />
+                          <Bell size={13} className={!n.is_read ? 'text-white' : 'text-gray-600'} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
                             <p className={`text-[12.5px] font-semibold leading-snug ${!n.is_read ? 'text-slate-800' : 'text-gray-600'}`}>{n.title}</p>
                             {!n.is_read && <span className="shrink-0 w-2 h-2 rounded-full bg-orange-500 mt-1.5"/>}
                           </div>
-                          <p className="text-[11.5px] text-gray-400 mt-0.5 line-clamp-2 leading-snug">{n.body}</p>
-                          <p className="text-[10px] text-gray-300 mt-1">{timeAgo(n.created_at)}</p>
+                          <p className="text-[11.5px] text-gray-600 mt-0.5 line-clamp-2 leading-snug">{n.body}</p>
+                          <p className="text-[10px] text-gray-600 mt-1">{timeAgo(n.created_at)}</p>
                         </div>
                       </button>
                     ))
@@ -196,7 +196,7 @@ const Layout = () => {
 
                 {/* ── Footer ── */}
                 <div className="border-t border-gray-100 px-5 py-3 bg-gray-50/50 flex items-center justify-between">
-                  <p className="text-[11px] text-gray-400">
+                  <p className="text-[11px] text-gray-600">
                     {unreadCount > 0 ? <><span className="font-semibold text-orange-500">{unreadCount}</span> unread</> : 'All caught up'}
                   </p>
                   <button

@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+﻿import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { attendanceApi } from '../../api/attendanceApi';
 import { rehearsalsApi } from '../../api/rehearsalsApi';
@@ -48,7 +48,7 @@ const RehearsalCheckinCard = ({ rehearsal, record, closesAt, onCheckin, isPendin
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="font-semibold text-slate-800 text-sm">{rehearsal.title}</p>
-          <p className="text-xs text-gray-400 mt-0.5">
+          <p className="text-xs text-gray-600 mt-0.5">
             {rehearsal.start_time?.slice(0, 5)} – {rehearsal.end_time?.slice(0, 5)}
             {rehearsal.location && <span> · {rehearsal.location}</span>}
           </p>
@@ -146,14 +146,14 @@ const MyAttendancePage = () => {
 
       {/* Today section */}
       <div className="mb-6">
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Today</h2>
+        <h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-3">Today</h2>
 
         {!selfCheckinEnabled ? (
-          <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-400">
+          <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-600">
             Self check-in is currently disabled. Your coordinator will mark attendance.
           </div>
         ) : todayRehearsals.length === 0 ? (
-          <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-400">
+          <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-600">
             No rehearsals scheduled for today.
           </div>
         ) : (
@@ -174,7 +174,7 @@ const MyAttendancePage = () => {
 
       {/* History */}
       <div>
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Attendance History</h2>
+        <h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-3">Attendance History</h2>
 
         {isLoading ? (
           <InlineSkeleton rows={3} />
@@ -185,20 +185,20 @@ const MyAttendancePage = () => {
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
-                  <th className="text-left px-4 py-2.5 text-xs font-medium text-gray-500 uppercase tracking-wide">Rehearsal</th>
-                  <th className="text-left px-4 py-2.5 text-xs font-medium text-gray-500 uppercase tracking-wide">Date</th>
-                  <th className="text-left px-4 py-2.5 text-xs font-medium text-gray-500 uppercase tracking-wide">Status</th>
+                  <th className="text-left px-4 py-2.5 text-xs font-medium text-gray-600 uppercase tracking-wide">Rehearsal</th>
+                  <th className="text-left px-4 py-2.5 text-xs font-medium text-gray-600 uppercase tracking-wide">Date</th>
+                  <th className="text-left px-4 py-2.5 text-xs font-medium text-gray-600 uppercase tracking-wide">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {pastRecords.map(a => (
                   <tr key={a.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 font-medium text-slate-700">{a.Rehearsal?.title || '—'}</td>
-                    <td className="px-4 py-3 text-gray-400 text-xs">{a.Rehearsal?.date || '—'}</td>
+                    <td className="px-4 py-3 text-gray-600 text-xs">{a.Rehearsal?.date || '—'}</td>
                     <td className="px-4 py-3">
                       {a.status
                         ? <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${statusStyle[a.status]}`}>{a.status}</span>
-                        : <span className="text-xs text-gray-300">—</span>
+                        : <span className="text-xs text-gray-600">—</span>
                       }
                     </td>
                   </tr>

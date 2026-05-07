@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+﻿import { useState, useMemo, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { rehearsalsApi } from '../../api/rehearsalsApi';
 import { attendanceApi } from '../../api/attendanceApi';
@@ -117,7 +117,7 @@ const AttendancePage = () => {
         </select>
 
         {selectedRehearsal && !loadingAttendance && (
-          <span className="text-sm text-gray-400">{markedCount} / {rows.length} marked</span>
+          <span className="text-sm text-gray-600">{markedCount} / {rows.length} marked</span>
         )}
 
         {isPast && (
@@ -132,7 +132,7 @@ const AttendancePage = () => {
           {loadingAttendance ? (
             <TableSkeleton rows={5} />
           ) : rows.length === 0 ? (
-            <div className="text-gray-400 text-sm">
+            <div className="text-gray-600 text-sm">
               {isPast ? 'No attendance was recorded for this rehearsal.' : 'No members found.'}
             </div>
           ) : (
@@ -141,10 +141,10 @@ const AttendancePage = () => {
                 <span className="text-sm font-semibold text-slate-700">
                   {selectedRehearsalObj?.title}
                   {selectedRehearsalObj?.date && (
-                    <span className="ml-2 text-gray-400 font-normal">{selectedRehearsalObj.date}</span>
+                    <span className="ml-2 text-gray-600 font-normal">{selectedRehearsalObj.date}</span>
                   )}
                 </span>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-gray-600">
                   {isPast ? 'Archived record' : 'Click a status to mark'}
                 </span>
               </div>
@@ -168,7 +168,7 @@ const AttendancePage = () => {
                           // Past: read-only badge
                           status
                             ? <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${statusStyle[status]}`}>{status}</span>
-                            : <span className="text-xs text-gray-300 italic">not recorded</span>
+                            : <span className="text-xs text-gray-600 italic">not recorded</span>
                         ) : (
                           // Today/future: editable buttons
                           <div className="flex items-center gap-1.5">
@@ -180,7 +180,7 @@ const AttendancePage = () => {
                                 className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-all capitalize
                                   ${status === s
                                     ? `${statusStyle[s]} ring-2 ring-offset-1 ring-current`
-                                    : 'bg-gray-50 text-gray-400 border-gray-200 hover:border-gray-400 hover:text-gray-600'
+                                    : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-gray-400 hover:text-gray-600'
                                   }
                                   ${saving[member.id] ? 'opacity-50 cursor-wait' : 'cursor-pointer'}
                                 `}

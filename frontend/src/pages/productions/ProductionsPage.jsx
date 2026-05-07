@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { productionsApi } from '../../api/productionsApi';
@@ -62,7 +62,7 @@ const ProductionsPage = () => {
         <div className="max-w-xl">
           <div className="flex items-center gap-3 mb-8">
             <button onClick={() => { setShowCreate(false); setForm(EMPTY_FORM); }}
-              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-slate-700 transition-colors">
+              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 hover:text-slate-700 transition-colors">
               <ArrowLeft size={18} />
             </button>
             <h2 className="text-xl font-bold text-slate-800">New Production</h2>
@@ -112,7 +112,7 @@ const ProductionsPage = () => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-normal text-slate-800">Productions</h1>
-              <p className="text-sm text-gray-400 mt-0.5">Manage all troup productions</p>
+              <p className="text-sm text-gray-600 mt-0.5">Manage all troup productions</p>
             </div>
             {canWrite && (
               <button onClick={() => setShowCreate(true)}
@@ -124,17 +124,17 @@ const ProductionsPage = () => {
 
           <div className="flex items-center justify-between mb-5 gap-3">
             <div className="relative flex-1 max-w-xs">
-              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" />
               <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search productions…"
                 className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white" />
             </div>
             <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
               <button onClick={() => setView('grid')}
-                className={`p-2 transition-colors ${view === 'grid' ? 'bg-orange-500 text-white' : 'bg-white text-gray-400 hover:bg-gray-50'}`}>
+                className={`p-2 transition-colors ${view === 'grid' ? 'bg-orange-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>
                 <LayoutGrid size={16} />
               </button>
               <button onClick={() => setView('list')}
-                className={`p-2 transition-colors ${view === 'list' ? 'bg-orange-500 text-white' : 'bg-white text-gray-400 hover:bg-gray-50'}`}>
+                className={`p-2 transition-colors ${view === 'list' ? 'bg-orange-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>
                 <List size={16} />
               </button>
             </div>
@@ -153,8 +153,8 @@ const ProductionsPage = () => {
                     className="flex flex-col items-center p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 group">
                     <FolderIcon color={cfg.color} size={56} />
                     <p className="mt-3 text-sm font-semibold text-slate-800 text-center leading-tight line-clamp-2 group-hover:text-orange-500 transition-colors">{p.title}</p>
-                    <p className="mt-1 text-xs text-gray-400">{cfg.label}</p>
-                    {p.start_date && <p className="text-[11px] text-gray-300 mt-0.5">{formatDate(p.start_date)}</p>}
+                    <p className="mt-1 text-xs text-gray-600">{cfg.label}</p>
+                    {p.start_date && <p className="text-[11px] text-gray-600 mt-0.5">{formatDate(p.start_date)}</p>}
                   </Link>
                 );
               })}
@@ -171,12 +171,12 @@ const ProductionsPage = () => {
                     <FolderIcon color={cfg.color} size={36} />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-slate-800 group-hover:text-orange-500 transition-colors truncate">{p.title}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">
+                      <p className="text-xs text-gray-600 mt-0.5">
                         {cfg.label}{p.start_date ? ` · ${formatDate(p.start_date)}` : ''}
                         {p.director?.name ? ` · ${p.director.name}` : ''}
                       </p>
                     </div>
-                    <ChevronRight size={16} className="text-gray-300 shrink-0" />
+                    <ChevronRight size={16} className="text-gray-600 shrink-0" />
                   </Link>
                 );
               })}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { conflictsApi } from '../../api/conflictsApi';
 import toast from 'react-hot-toast';
@@ -58,7 +58,7 @@ const ConflictsPage = () => {
           <ScanSearch size={15} /> {detectMutation.isPending ? 'Scanning…' : 'Scan for Conflicts'}
         </button>
       </div>
-      <p className="text-sm text-gray-400 mb-6">
+      <p className="text-sm text-gray-600 mb-6">
         Checks if any member is assigned to two different productions that have rehearsals on the same day at the same time — e.g. a member is in Production A (9am–11am) and Production B (10am–12pm) on the same day.
       </p>
 
@@ -85,7 +85,7 @@ const ConflictsPage = () => {
                 <span className={`text-xs font-medium ${conflict.status === 'open' ? 'text-red-500' : 'text-green-500'}`}>{conflict.status}</span>
               </div>
               <p className="text-gray-700 text-sm mb-3">{conflict.description}</p>
-              <p className="text-xs text-gray-400 mb-3">Members: {conflict.members?.map(m => m.name).join(', ') || '—'}</p>
+              <p className="text-xs text-gray-600 mb-3">Members: {conflict.members?.map(m => m.name).join(', ') || '—'}</p>
               {conflict.status === 'open' && (
                 <div className="flex gap-2">
                   <button

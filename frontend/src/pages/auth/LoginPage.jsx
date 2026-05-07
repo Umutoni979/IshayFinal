@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { authApi } from '../../api/authApi';
@@ -79,13 +79,13 @@ const LoginPage = () => {
         <h1 className="text-[42px] font-black text-slate-800 text-center leading-tight tracking-tight">
           {tab === 'login' ? 'Log in to your Account' : 'Create Admin Account'}
         </h1>
-        <p className="text-base text-gray-400 text-center mt-2.5 mb-1">
+        <p className="text-base text-gray-600 text-center mt-2.5 mb-1">
           {tab === 'login'
             ? 'Welcome back! Please enter your credentials to continue.'
             : 'Sign up to get admin access to the system.'}
         </p>
         {tab === 'login' && (
-          <p className="text-sm text-gray-400 text-center mb-9">
+          <p className="text-sm text-gray-600 text-center mb-9">
             Don't have an account?{' '}
             <span className="text-slate-600 font-semibold">Your account is created by the system admin — check your email for credentials.</span>
           </p>
@@ -101,7 +101,7 @@ const LoginPage = () => {
               className={`flex-1 py-4 text-sm font-bold transition-colors ${
                 tab === 'login'
                   ? 'text-slate-800 bg-white border-b-2 border-slate-800'
-                  : 'text-gray-400 bg-gray-100 border-b border-gray-200'
+                  : 'text-gray-600 bg-gray-100 border-b border-gray-200'
               }`}
             >
               Log in
@@ -114,8 +114,8 @@ const LoginPage = () => {
                 tab === 'signup'
                   ? 'text-slate-800 bg-white border-b-2 border-slate-800'
                   : regEnabled
-                    ? 'text-gray-500 bg-gray-100 border-b border-gray-200 hover:text-gray-700 cursor-pointer'
-                    : 'text-gray-300 bg-gray-100 border-b border-gray-200 cursor-not-allowed'
+                    ? 'text-gray-600 bg-gray-100 border-b border-gray-200 hover:text-gray-700 cursor-pointer'
+                    : 'text-gray-600 bg-gray-100 border-b border-gray-200 cursor-not-allowed'
               }`}
             >
               Sign up
@@ -125,7 +125,7 @@ const LoginPage = () => {
           <div className="px-10 py-8">
             <div className="flex items-center gap-3 mb-7">
               <div className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-gray-600">
                 {tab === 'login' ? 'Use your email' : 'Admin registration'}
               </span>
               <div className="flex-1 h-px bg-gray-200" />

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -83,7 +83,7 @@ const RehearsalCalendarPage = () => {
         <div className="max-w-xl">
           <div className="flex items-center gap-3 mb-8">
             <button onClick={() => { setShowCreate(false); setForm(EMPTY_FORM); }}
-              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-slate-700 transition-colors">
+              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 hover:text-slate-700 transition-colors">
               <ArrowLeft size={18} />
             </button>
             <h2 className="text-xl font-bold text-slate-800">Schedule Rehearsal</h2>
@@ -175,7 +175,7 @@ const RehearsalCalendarPage = () => {
                         className={`w-10 h-10 rounded-full text-xs font-semibold border transition-colors
                           ${form.days_of_week.includes(i)
                             ? 'bg-slate-700 text-white border-slate-700'
-                            : 'bg-white text-gray-500 border-gray-300 hover:border-slate-400'}`}
+                            : 'bg-white text-gray-600 border-gray-300 hover:border-slate-400'}`}
                       >{day}</button>
                     ))}
                   </div>
@@ -185,11 +185,11 @@ const RehearsalCalendarPage = () => {
               <div className="flex items-start py-4 border-b border-gray-100">
                 <span className="w-44 shrink-0 text-sm font-bold text-slate-700 pt-2">
                   Check-in Closes At
-                  <span className="block text-gray-400 font-normal text-xs">optional</span>
+                  <span className="block text-gray-600 font-normal text-xs">optional</span>
                 </span>
                 <div className="flex-1">
                   <input type="time" value={form.checkin_closes_at} onChange={set('checkin_closes_at')} className={inputCls} />
-                  <p className="text-xs text-gray-400 mt-1.5">After this time members can no longer check themselves in. Leave empty for no cutoff.</p>
+                  <p className="text-xs text-gray-600 mt-1.5">After this time members can no longer check themselves in. Leave empty for no cutoff.</p>
                 </div>
               </div>
 
@@ -237,7 +237,7 @@ const RehearsalCalendarPage = () => {
                 <div className="text-xs p-0.5 truncate">
                   <strong>{info.event.title}</strong>
                   {info.event.extendedProps.location && (
-                    <span className="ml-1 text-gray-300">· {info.event.extendedProps.location}</span>
+                    <span className="ml-1 text-gray-600">· {info.event.extendedProps.location}</span>
                   )}
                 </div>
               )}

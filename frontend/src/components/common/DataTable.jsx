@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { ChevronLeft, ChevronRight, ChevronsUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
@@ -61,7 +61,7 @@ const DataTable = ({ columns, data, pageSize: defaultPageSize = 10 }) => {
                         ? sort.dir === 'asc'
                           ? <ChevronUp size={13} className="text-orange-500" />
                           : <ChevronDown size={13} className="text-orange-500" />
-                        : <ChevronsUpDown size={12} className="text-gray-400" />
+                        : <ChevronsUpDown size={12} className="text-gray-600" />
                     )}
                   </span>
                 </th>
@@ -71,7 +71,7 @@ const DataTable = ({ columns, data, pageSize: defaultPageSize = 10 }) => {
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="px-4 py-10 text-center text-gray-400 text-sm">
+                <td colSpan={columns.length} className="px-4 py-10 text-center text-gray-600 text-sm">
                   No results found.
                 </td>
               </tr>
@@ -79,7 +79,7 @@ const DataTable = ({ columns, data, pageSize: defaultPageSize = 10 }) => {
               <tr key={row.id ?? i} className="border-b border-gray-600 last:border-0 hover:bg-gray-50 transition-colors">
                 {columns.map(col => (
                   <td key={col.key} className="px-4 py-2 text-gray-600 text-sm font-bold">
-                    {col.render ? col.render(row) : row[col.key] ?? <span className="text-gray-400">—</span>}
+                    {col.render ? col.render(row) : row[col.key] ?? <span className="text-gray-600">—</span>}
                   </td>
                 ))}
               </tr>
@@ -90,7 +90,7 @@ const DataTable = ({ columns, data, pageSize: defaultPageSize = 10 }) => {
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+          <div className="flex items-center gap-1.5 text-xs text-gray-600">
             <span>Rows per page:</span>
             <select
               value={pageSize}
@@ -99,20 +99,20 @@ const DataTable = ({ columns, data, pageSize: defaultPageSize = 10 }) => {
             >
               {PAGE_SIZE_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
-            <span className="ml-2 text-gray-400">{start + 1}–{Math.min(start + pageSize, sorted.length)} of {sorted.length}</span>
+            <span className="ml-2 text-gray-600">{start + 1}–{Math.min(start + pageSize, sorted.length)} of {sorted.length}</span>
           </div>
 
           <div className="flex items-center gap-1">
             <button
               onClick={() => goTo(page - 1)}
               disabled={page === 1}
-              className="p-1.5 rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded text-gray-600 hover:text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronLeft size={15} />
             </button>
             {pages.map((p, i) =>
               p === '…' ? (
-                <span key={`e-${i}`} className="px-2 text-gray-400">…</span>
+                <span key={`e-${i}`} className="px-2 text-gray-600">…</span>
               ) : (
                 <button
                   key={p}
@@ -128,7 +128,7 @@ const DataTable = ({ columns, data, pageSize: defaultPageSize = 10 }) => {
             <button
               onClick={() => goTo(page + 1)}
               disabled={page === totalPages}
-              className="p-1.5 rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded text-gray-600 hover:text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronRight size={15} />
             </button>

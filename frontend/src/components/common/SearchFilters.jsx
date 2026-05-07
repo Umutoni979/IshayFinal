@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+﻿import { useState, useRef, useEffect } from 'react';
 import { Search, ChevronDown, Check } from 'lucide-react';
 
 const FilterDropdown = ({ label, value, options, onChange }) => {
@@ -20,7 +20,7 @@ const FilterDropdown = ({ label, value, options, onChange }) => {
         className="flex items-center gap-2 border border-gray-300 rounded px-3 py-2 text-sm text-gray-700 bg-white hover:border-gray-400 transition-colors min-w-[120px] justify-between"
       >
         <span>{value ? `${label}: ${activeLabel}` : `All ${label}s`}</span>
-        <ChevronDown size={14} className={`shrink-0 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown size={14} className={`shrink-0 text-gray-600 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
@@ -28,7 +28,7 @@ const FilterDropdown = ({ label, value, options, onChange }) => {
           {value && (
             <button
               onClick={() => { onChange(''); setOpen(false); }}
-              className="w-full text-left px-4 py-2 text-xs text-gray-400 hover:bg-gray-50 transition-colors"
+              className="w-full text-left px-4 py-2 text-xs text-gray-600 hover:bg-gray-50 transition-colors"
             >
               Clear
             </button>
@@ -60,7 +60,7 @@ const SearchFilters = ({ search, onSearch, placeholder = 'Search…', filters = 
   <div className="mb-5">
     <div className="flex items-center gap-2 flex-wrap">
       <div className="flex items-center gap-2 border border-gray-300 rounded px-3 py-2 bg-white focus-within:border-gray-400 transition flex-1 min-w-[200px] max-w-sm">
-        <Search size={14} className="text-gray-400 shrink-0" />
+        <Search size={14} className="text-gray-600 shrink-0" />
         <input
           type="text"
           value={search}
@@ -73,7 +73,7 @@ const SearchFilters = ({ search, onSearch, placeholder = 'Search…', filters = 
       {filters.map(f => <FilterDropdown key={f.label} {...f} />)}
 
       {resultCount !== undefined && (
-        <span className="text-xs text-gray-400 ml-auto">
+        <span className="text-xs text-gray-600 ml-auto">
           {resultCount === 0 ? 'No results' : `${resultCount} result${resultCount !== 1 ? 's' : ''}`}
         </span>
       )}

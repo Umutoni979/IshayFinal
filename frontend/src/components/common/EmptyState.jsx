@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EmptyState — illustrated empty state component.
  * Usage: <EmptyState type="conflicts" message="No conflicts found." />
  * Types: conflicts | notifications | rehearsals | productions | roles | attendance | reports | members | default
@@ -221,7 +221,7 @@ const EmptyState = ({ type = 'default', message, sub }) => (
       {illustrations[type] ?? illustrations.default}
     </div>
     <p className="text-sm font-semibold text-slate-500 mt-1">{message}</p>
-    {sub && <p className="text-xs text-gray-400 mt-1 max-w-xs text-center">{sub}</p>}
+    {sub && <p className="text-xs text-gray-600 mt-1 max-w-xs text-center">{sub}</p>}
   </div>
 );
 

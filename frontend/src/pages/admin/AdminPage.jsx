@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminApi } from '../../api/adminApi';
 import { authApi } from '../../api/authApi';
+import { rehearsalsApi } from '../../api/rehearsalsApi';
 import toast from 'react-hot-toast';
 import { X, ShieldCheck, UserPlus, Lock, Pencil, Trash2, MoreVertical, ScanLine, ArrowLeft } from 'lucide-react';
 import { ROLES } from '../../utils/constants';
@@ -123,6 +124,13 @@ const AdminPage = () => {
   const selfCheckinStatus   = selfCheckinData?.enabled;
   const selfCheckinClosesAt = selfCheckinData?.closesAt || null;
 
+  const today = new Date().toISOString().slice(0, 10);
+  const { data: allRehearsals = [] } = useQuery({
+    queryKey: ['rehearsals'],
+    queryFn: () => rehearsalsApi.getAll().then(r => r.data.data.rehearsals),
+  });
+  const todaysRehearsals = allRehearsals.filter(r => r.date === today);
+
   const toggleRegMutation = useMutation({
     mutationFn: (enable) => adminApi.toggleRegistration(enable),
     onSuccess: (_, enable) => {
@@ -243,8 +251,16 @@ const AdminPage = () => {
               <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
                 <ScanLine size={18} /> Self Check-in
               </h2>
-              <button onClick={() => setShowCheckinSettings(false)}><X size={20} className="text-gray-400" /></button>
+              <button onClick={() => setShowCheckinSettings(false)}><X size={20} className="text-gray-600" /></button>
             </div>
+            {todaysRehearsals.length > 0 && (
+              <div className="mb-4 bg-orange-50 border border-orange-100 rounded-lg px-3 py-2">
+                <p className="text-xs font-semibold text-orange-700 mb-1">Today's rehearsal{todaysRehearsals.length > 1 ? 's' : ''}</p>
+                {todaysRehearsals.map(r => (
+                  <p key={r.id} className="text-xs text-orange-600">{r.title} · {r.start_time?.slice(0,5)}–{r.end_time?.slice(0,5)}{r.location ? ` · ${r.location}` : ''}</p>
+                ))}
+              </div>
+            )}
             {selfCheckinStatus ? (
               <div>
                 <div className="text-center mb-4">
@@ -253,15 +269,15 @@ const AdminPage = () => {
                   </div>
                   <p className="font-semibold text-slate-800 mb-1">Check-in is open</p>
                   {selfCheckinClosesAt ? (
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-600">
                       Closes at <strong>{new Date(selfCheckinClosesAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong>
                     </p>
                   ) : (
-                    <p className="text-sm text-gray-400">No time limit</p>
+                    <p className="text-sm text-gray-600">No time limit</p>
                   )}
                 </div>
                 <div className="border-t border-gray-100 pt-4 mb-4">
-                  <p className="text-xs font-medium text-gray-500 mb-2">Extend by</p>
+                  <p className="text-xs font-medium text-gray-600 mb-2">Extend by</p>
                   <div className="flex gap-2 mb-2">
                     {[15, 30, 60].map(mins => (
                       <button key={mins}
@@ -330,7 +346,7 @@ const AdminPage = () => {
               <Trash2 size={20} className="text-red-500" />
             </div>
             <h2 className="text-lg font-bold text-slate-800 mb-1">Delete User</h2>
-            <p className="text-sm text-gray-500 mb-6">
+            <p className="text-sm text-gray-600 mb-6">
               Are you sure you want to delete <span className="font-semibold text-slate-700">{deleteConfirm.name}</span>? This cannot be undone.
             </p>
             <div className="flex gap-3">
@@ -351,9 +367,9 @@ const AdminPage = () => {
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
             <div className="flex justify-between items-center mb-1">
               <h2 className="text-lg font-bold text-slate-800 capitalize">{editRoleModal.role} Permissions</h2>
-              <button onClick={() => setEditRoleModal(null)}><X size={20} className="text-gray-400" /></button>
+              <button onClick={() => setEditRoleModal(null)}><X size={20} className="text-gray-600" /></button>
             </div>
-            <p className="text-xs text-gray-400 mb-4">{ROLE_DESCRIPTIONS[editRoleModal.role]}</p>
+            <p className="text-xs text-gray-600 mb-4">{ROLE_DESCRIPTIONS[editRoleModal.role]}</p>
             <div className="max-h-72 overflow-y-auto border border-gray-200 rounded p-3 mb-4 space-y-3">
               {PERMISSION_GROUPS.map(group => (
                 <div key={group.page}>
@@ -397,7 +413,7 @@ const AdminPage = () => {
           {/* Back + title */}
           <div className="flex items-center gap-3 mb-8">
             <button onClick={cancelForm}
-              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-slate-700 transition-colors">
+              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 hover:text-slate-700 transition-colors">
               <ArrowLeft size={18} />
             </button>
             <h2 className="text-xl font-bold text-slate-800">
@@ -445,7 +461,7 @@ const AdminPage = () => {
                   <div className="flex-1">
                     <input required value={form.temp_password} onChange={e => setForm({...form, temp_password: e.target.value})}
                       className={inputCls} placeholder="Give this to the user" />
-                    <p className="text-xs text-gray-400 mt-1.5">Share this with the user — they'll set their own password on first login.</p>
+                    <p className="text-xs text-gray-600 mt-1.5">Share this with the user — they'll set their own password on first login.</p>
                   </div>
                 </div>
                 <div className="flex items-start py-4">
@@ -455,14 +471,14 @@ const AdminPage = () => {
                   <div className="flex-1">
                     {BASIC_ROLES.includes(form.role) ? (
                       <div className="space-y-2.5">
-                        <p className="text-xs text-gray-400 mb-3">By default <strong className="capitalize">{form.role}</strong> can only see their profile &amp; dashboard.</p>
+                        <p className="text-xs text-gray-600 mb-3">By default <strong className="capitalize">{form.role}</strong> can only see their profile &amp; dashboard.</p>
                         {MEMBER_PAGE_ACCESS.map(({ label, perm, desc }) => (
                           <label key={perm} className="flex items-center gap-3 cursor-pointer">
                             <input type="checkbox" checked={form.custom_permissions.includes(perm)}
                               onChange={() => togglePerm(perm, form.custom_permissions, (v) => setForm({...form, custom_permissions: v}))}
                               className="accent-slate-700 w-4 h-4" />
                             <span className="text-sm font-medium text-slate-700">{label}</span>
-                            <span className="text-xs text-gray-400">{desc}</span>
+                            <span className="text-xs text-gray-600">{desc}</span>
                           </label>
                         ))}
                       </div>
@@ -486,7 +502,7 @@ const AdminPage = () => {
                                         disabled={isDefault}
                                         onChange={() => !isDefault && togglePerm(perm, form.custom_permissions, (v) => setForm({...form, custom_permissions: v}))}
                                         className="accent-slate-800" />
-                                      <span className={isDefault ? 'text-gray-400' : 'text-gray-600'}>{perm.split(':')[1]}</span>
+                                      <span className={isDefault ? 'text-gray-600' : 'text-gray-600'}>{perm.split(':')[1]}</span>
                                       {isDefault && <span className="text-[9px] text-blue-400 font-medium">role</span>}
                                     </label>
                                   );
@@ -559,14 +575,14 @@ const AdminPage = () => {
                   <div className="flex-1">
                     {BASIC_ROLES.includes(activeForm.user.role) ? (
                       <div className="space-y-2.5">
-                        <p className="text-xs text-gray-500 mb-3">Choose which pages this member can access:</p>
+                        <p className="text-xs text-gray-600 mb-3">Choose which pages this member can access:</p>
                         {MEMBER_PAGE_ACCESS.map(({ label, perm, desc }) => (
                           <label key={perm} className="flex items-center gap-3 cursor-pointer">
                             <input type="checkbox" checked={permEdit.includes(perm)}
                               onChange={() => togglePerm(perm, permEdit, setPermEdit)}
                               className="accent-slate-700 w-4 h-4" />
                             <span className="text-sm font-medium text-slate-700">{label}</span>
-                            <span className="text-xs text-gray-400">{desc}</span>
+                            <span className="text-xs text-gray-600">{desc}</span>
                           </label>
                         ))}
                       </div>
@@ -590,7 +606,7 @@ const AdminPage = () => {
                                         disabled={isDefault}
                                         onChange={() => !isDefault && togglePerm(perm, permEdit, setPermEdit)}
                                         className="accent-slate-800" />
-                                      <span className={isDefault ? 'text-gray-400' : 'text-gray-600'}>{perm.split(':')[1]}</span>
+                                      <span className={isDefault ? 'text-gray-600' : 'text-gray-600'}>{perm.split(':')[1]}</span>
                                       {isDefault && <span className="text-[9px] text-blue-400 font-medium">role</span>}
                                     </label>
                                   );
@@ -624,14 +640,28 @@ const AdminPage = () => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-normal text-slate-800">Admin</h1>
-              <p className="text-sm text-gray-400">User management and system settings</p>
+              <p className="text-sm text-gray-600">User management and system settings</p>
             </div>
             <div className="flex items-center gap-3">
-              <button onClick={() => setShowCheckinSettings(true)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded text-sm font-medium transition-colors text-white bg-orange-500 hover:bg-orange-600">
-                <ScanLine size={15} />
-                Self check-in: {selfCheckinStatus ? 'On' : 'Off'}
-              </button>
+              <div className="relative group">
+                <button
+                  onClick={() => todaysRehearsals.length > 0 && setShowCheckinSettings(true)}
+                  disabled={!selfCheckinStatus && todaysRehearsals.length === 0}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm font-medium transition-colors text-white ${
+                    selfCheckinStatus ? 'bg-orange-500 hover:bg-orange-600' :
+                    todaysRehearsals.length === 0 ? 'bg-gray-300 cursor-not-allowed' :
+                    'bg-orange-500 hover:bg-orange-600'
+                  }`}
+                >
+                  <ScanLine size={15} />
+                  Self check-in: {selfCheckinStatus ? 'On' : 'Off'}
+                </button>
+                {!selfCheckinStatus && todaysRehearsals.length === 0 && (
+                  <div className="absolute right-0 top-full mt-1.5 w-52 bg-slate-800 text-white text-xs rounded-lg px-3 py-2 shadow-lg z-50 hidden group-hover:block">
+                    No rehearsal scheduled for today. Schedule one first to enable self check-in.
+                  </div>
+                )}
+              </div>
               <button onClick={() => toggleRegMutation.mutate(!regStatus)} disabled={toggleRegMutation.isPending}
                 className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors">
                 {regStatus ? <UserPlus size={15} /> : <Lock size={15} />}
@@ -649,7 +679,7 @@ const AdminPage = () => {
             {[['users', 'Users'], ['roles', 'Roles & Permissions']].map(([key, label]) => (
               <button key={key} onClick={() => setActiveTab(key)}
                 className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === key ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-slate-700'
+                  activeTab === key ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-600 hover:text-slate-700'
                 }`}>
                 {label}
               </button>
@@ -664,13 +694,13 @@ const AdminPage = () => {
                   <div className="flex items-start justify-between mb-1">
                     <h3 className="font-bold text-slate-800 text-base capitalize">{roleName}</h3>
                     <button onClick={() => setEditRoleModal({ role: roleName, perms: [...perms] })}
-                      className="text-xs text-gray-500 hover:text-slate-700 border border-gray-200 hover:border-gray-400 px-2.5 py-1 rounded transition-colors">
+                      className="text-xs text-gray-600 hover:text-slate-700 border border-gray-200 hover:border-gray-400 px-2.5 py-1 rounded transition-colors">
                       Edit
                     </button>
                   </div>
-                  <p className="text-xs text-gray-400 mb-3">{ROLE_DESCRIPTIONS[roleName] ?? ''}</p>
+                  <p className="text-xs text-gray-600 mb-3">{ROLE_DESCRIPTIONS[roleName] ?? ''}</p>
                   {perms.length === 0 ? (
-                    <p className="text-xs text-gray-300 italic">No default permissions</p>
+                    <p className="text-xs text-gray-600 italic">No default permissions</p>
                   ) : (
                     <div className="flex flex-wrap gap-1.5">
                       {perms.map(p => (
@@ -709,7 +739,7 @@ const AdminPage = () => {
                   <DataTable
                     columns={[
                       { key: 'name',    label: 'Name',    render: u => <span className="font-medium text-slate-800">{u.name}</span> },
-                      { key: 'email',   label: 'Email',   render: u => <span className="text-gray-500 text-xs">{u.email}</span> },
+                      { key: 'email',   label: 'Email',   render: u => <span className="text-gray-600 text-xs">{u.email}</span> },
                       { key: 'role',    label: 'Role',    render: u => (
                         <select value={u.role} onChange={e => roleMutation.mutate({ id: u.id, role: e.target.value })}
                           className="border border-gray-200 rounded px-2 py-1 text-xs">
@@ -746,7 +776,7 @@ const AdminPage = () => {
                             const rect = e.currentTarget.getBoundingClientRect();
                             setOpenDropdown({ id: u.id, top: rect.bottom + window.scrollY, left: rect.right - 144 + window.scrollX });
                           }}
-                          className="p-1.5 text-gray-400 hover:text-slate-700 hover:bg-gray-100 rounded transition-colors"
+                          className="p-1.5 text-gray-600 hover:text-slate-700 hover:bg-gray-100 rounded transition-colors"
                         >
                           <MoreVertical size={15} />
                         </button>

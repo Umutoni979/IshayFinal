@@ -38,7 +38,7 @@ const Sidebar = ({ open = true }) => {
                   `flex items-center px-3 py-2 rounded-full text-[13.5px] font-semibold transition-colors ${
                     isActive
                       ? 'bg-gray-100 text-gray-900'
-                      : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
                   }`
                 }
               >

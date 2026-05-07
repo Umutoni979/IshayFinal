@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { authApi } from '../../api/authApi';
 import toast from 'react-hot-toast';
@@ -36,7 +36,7 @@ const ResetPasswordPage = () => {
         <h1 className="text-[42px] font-black text-slate-800 text-center leading-tight tracking-tight">
           Set a New Password
         </h1>
-        <p className="text-base text-gray-400 text-center mt-2.5 mb-9">
+        <p className="text-base text-gray-600 text-center mt-2.5 mb-9">
           Choose a strong password for your account
         </p>
 

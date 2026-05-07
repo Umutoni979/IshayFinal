@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authApi } from '../../api/authApi';
 import toast from 'react-hot-toast';
@@ -36,7 +36,7 @@ const ForgotPasswordPage = () => {
         <h1 className="text-[42px] font-black text-slate-800 text-center leading-tight tracking-tight">
           Reset your Password
         </h1>
-        <p className="text-base text-gray-400 text-center mt-2.5 mb-9">
+        <p className="text-base text-gray-600 text-center mt-2.5 mb-9">
           We'll send a 6-digit code to your email address
         </p>
 

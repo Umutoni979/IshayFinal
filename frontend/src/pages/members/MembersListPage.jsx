@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { usersApi } from '../../api/usersApi';
 import { formatDate } from '../../utils/formatDate';
@@ -8,9 +8,9 @@ import { TableSkeleton } from '../../components/common/Skeleton';
 
 const columns = [
   { key: 'name',        label: 'Name',   render: r => <span className="font-medium text-slate-800">{r.name}</span> },
-  { key: 'email',       label: 'Email',  render: r => <span className="text-gray-500 text-xs">{r.email}</span> },
+  { key: 'email',       label: 'Email',  render: r => <span className="text-gray-600 text-xs">{r.email}</span> },
   { key: 'role',        label: 'Role',   render: r => <span className="text-gray-700">{r.role}</span> },
-  { key: 'member_type', label: 'Type',   render: r => <span className="text-gray-500">{r.member_type ?? '—'}</span> },
+  { key: 'member_type', label: 'Type',   render: r => <span className="text-gray-600">{r.member_type ?? '—'}</span> },
   {
     key: 'is_active', label: 'Status',
     render: r => (
@@ -19,7 +19,7 @@ const columns = [
       </span>
     ),
   },
-  { key: 'created_at', label: 'Joined', render: r => <span className="text-gray-400 text-xs">{formatDate(r.created_at)}</span> },
+  { key: 'created_at', label: 'Joined', render: r => <span className="text-gray-600 text-xs">{formatDate(r.created_at)}</span> },
 ];
 
 const MembersListPage = () => {
@@ -46,7 +46,7 @@ const MembersListPage = () => {
   return (
     <div>
       <h1 className="text-2xl font-normal text-slate-800 mb-1">Members</h1>
-      <p className="text-sm text-gray-400 mb-6">All registered members of ISHYA Culture Troup</p>
+      <p className="text-sm text-gray-600 mb-6">All registered members of ISHYA Culture Troup</p>
 
       <SearchFilters
         search={search}
